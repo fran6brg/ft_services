@@ -33,6 +33,7 @@ if [ "$1" = "remove" ]; then
 	minikube delete;
 elif [ "$1" = "stop" ]; then
 	export MINIKUBE_HOME=~/goinfre;
+	kubectl delete -k srcs/kustomization
 	minikube stop;
 elif [ "$1" == "update" ]; then
 	export MINIKUBE_HOME=~/goinfre
@@ -53,7 +54,7 @@ elif [ !$1 ]; then
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
-	minikube dashboard > logs/dashboard_logs &	
+	minikube dashboard > logs/dashboard_logs &
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
 fi
