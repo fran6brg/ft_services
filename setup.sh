@@ -45,6 +45,7 @@ elif [ !$1 ]; then
 	export MINIKUBE_HOME=~/goinfre
 	minikube config set vm-driver virtualbox
 	minikube start --memory 3g > logs/vm_launching_logs &
+	minikube addons enable ingress
 	pid=$!
 	/bin/echo "Launching minikube"
 	while kill -0 $pid 2> /dev/null; do
