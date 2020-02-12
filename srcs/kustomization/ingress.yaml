@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: ft-service-ingress
@@ -6,11 +6,12 @@ metadata:
     app: ingress-controller
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
     - http:
         paths:
-        - path: /
+        - path: /nginx{1}
           backend:
             serviceName: nginx-svc
             servicePort: 80
@@ -18,7 +19,6 @@ spec:
           backend:
             serviceName: phpmyadmin-svc
             servicePort: 5000
-        - path: /wordpress
-          backend:
-            serviceName: wordpress
-            servicePort: 5050
+  # backend:
+  #   serviceName: nginx-svc
+  #   servicePort: 80
