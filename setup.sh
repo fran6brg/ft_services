@@ -1,55 +1,47 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    setup.sh                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: fberger <fberger@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2019/12/27 13:56:12 by fberger           #+#    #+#              #
-#    Updated: 2020/02/10 12:50:38 by fberger          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+#!/bin/bash
+
+#############################
+#		CLEANSE				#
+#############################
+
+rm -r ~/Library/Caches/* 2> /dev/null
+rm ~/.zcompdump* 2> /dev/null
+rm -rf ~/Library/**.42_cache_bak* 2> /dev/null
+rm -rf ~/**.42_cache_bak 2> /dev/null
+rm -rf ~/Library/**.42_cache_bak_** 2> /dev/null
+rm -rf ~/**.42_cache_bak_** 2> /dev/null
+brew cleanup 2> /dev/null
 
 
-# onboarding (do it once) -----------------------------------------------------
+#############################
+#	MINIKUBE LAUNCH			#
+#############################
 
-# brew install minikube
-# minikube start
-# move ~/.minikube in /sgoinfre/goinfre/Perso/fberger/
-# ln -s /sgoinfre/goinfre/Perso/fberger/.minikube ~/.minikube
-# minikube delete
+if [ "$1" = "remove" ]; then
+	export MINIKUBE_HOME=~/goinfre;
+	minikube delete;
+elif [ "$1" = "stop" ]; then
+	export MINIKUBE_HOME=~/goinfre;
+	minikube stop;
+elif [ "$1" == "update" ]; then
+	export MINIKUBE_HOME=~/goinfre
+	kubectl delete -k srcs/kustomization
+	kubectl apply -k srcs/kustomization
+	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
+elif [ "$1" == "dashboard" ]; then
+	open $(cat logs/dashboard_logs | cut -c 12- | rev | cut -c 27- | rev)
+elif [ !$1 ]; then
+	export MINIKUBE_HOME=~/goinfre
+	minikube config set vm-driver virtualbox
+	minikube start --memory 3g &> logs/vm_launching_logs
+	pid=$!
+	/bin/echo -n "Launching minikube"
+	while kill -0 $pid 2> /dev/null; do
+	    /bin/echo -n " .";
+	    sleep 1;
+	done
+	minikube dashboard &> logs/dashboard_logs
+	kubectl apply -k srcs/kustomization
+	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
+fi
 
-# clean before (re)launch minikube --------------------------------------------
-
-# kubectl delete all --all
-# minikube delete
-# rm -rf ~/goinfre/.minikube
-# rm -r ~/Library/Caches/*; rm ~/.zcompdump*; brew cleanup
-# rm -rf ~/Library/**.42_cache_bak_**; rm -rf ~/**.42_cache_bak_**; brew cleanup
-sh free_space.sh
-virtualbox destroy
-# Dont't forget to click red cross to quit virtualbox ui
-
-
-# launch minikube -------------------------------------------------------------
-# (to do from shell session in /sgoinfre/goinfre/Perso/fberger)
-
-# set variable for current shell and all processes started from current shell:
-export MINIKUBE_HOME=~/goinfre
-# nb : if troubles with the script then copy paste the previous line directly in the shell
-
-printf "\nlaunching minikube \n"
-minikube config set vm-driver virtualbox
-minikube start --disk-size 5g
-
-# check minikube status
-printf "\nminikube status \n"
-minikube status
-
-# browse dashboard
-minikube dashboard
-
-# set up the env variables necessary for Docker to interact with minikube VM
-eval $(minikube docker-env)
-
-# ... -------------------------------------------------------------------------
