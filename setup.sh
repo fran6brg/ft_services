@@ -46,6 +46,10 @@ elif [ "$1" == "update" ]; then
 	kubectl delete -k srcs/kustomization 2> /dev/null
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
+elif [ "$1" == "apply" ]; then
+	kubectl apply -k srcs/kustomization
+	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
+
 elif [ "$1" == "dashboard" ]; then
 	open $(cat logs/dashboard_logs | awk '{print $3}')
 elif [ "$1" == "open" ]; then
@@ -79,5 +83,4 @@ elif [ !$1 ]; then
 	minikube dashboard > logs/dashboard_logs &
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services default : " http://$(minikube ip) 2> /dev/null
-	# /bin/echo "Nginx Services : " http://$(minikube ip) 2> /dev/null
 fi

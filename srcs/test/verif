@@ -1,0 +1,66 @@
+4c4
+<   name: wordpress-mysql
+---
+>   name: mysql8-svc
+6c6
+<     app: wordpress
+---
+>     app: mysql8
+7a8
+>   ClusterIP: None
+9c10,11
+<     - port: 3306
+---
+>   - port: 3306
+>     protocol: TCP
+11,13c13
+<     app: wordpress
+<     tier: mysql
+<   clusterIP: None
+---
+>     app: mysql8
+20c20
+<     app: wordpress
+---
+>     app: mysql8
+26c26
+<       storage: 20Gi
+---
+>       storage: 5Gi
+28c28
+< apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+---
+> apiVersion: apps/v1
+31c31
+<   name: wordpress-mysql
+---
+>   name: mysql-dpl
+33c33
+<     app: wordpress
+---
+>     app: mysql
+37,38c37
+<       app: wordpress
+<       tier: mysql
+---
+>       app: mysql8
+44,45c43
+<         app: wordpress
+<         tier: mysql
+---
+>         app: mysql8
+48c46
+<       - image: mysql:5.6
+---
+>       - image: mysql:8.0
+55a54,57
+>         - name: MYSQL_DATABASE
+>           value: my_db
+>         - name: MYSQL_USER
+>           value: admin
+60,61c62,63
+<         - name: mysql-persistent-storage
+<           mountPath: /var/lib/mysql
+---
+>           - name: mysql-persistent-storage
+>             mountPath: /var/lib/mysql
