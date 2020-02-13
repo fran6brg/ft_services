@@ -9,7 +9,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 5Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -58,7 +58,7 @@ metadata:
   labels:
     app: mysql8
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
   - port: 3306
     protocol: TCP

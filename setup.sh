@@ -25,28 +25,49 @@ brew cleanup 2> /dev/null
 # clock_6='\U0001F556'
 # clock_7='\U0001F557'
 # sp="$clock_1$clock_2$clock_3$clock_4$clock_5$clock_6$clock_7"
+
 sp="/-\|"
+export MINIKUBE_HOME=~/goinfre
 
 if [ "$1" = "remove" ]; then
-	export MINIKUBE_HOME=~/goinfre;
-	kill $(ps aux | grep "\bminikube dashboard\b" | awk '{print $2}') 2> /dev/null
-	minikube delete;
+	case $2 in
+		"pods")
+			kubectl delete all --all
+			;;
+		*)
+			kill $(ps aux | grep "\bminikube dashboard\b" | awk '{print $2}') 2> /dev/null
+			minikube delete
+			;;
+	esac
 elif [ "$1" = "stop" ]; then
-	export MINIKUBE_HOME=~/goinfre;
 	kubectl delete -k srcs/kustomization
 	minikube stop;
 elif [ "$1" == "update" ]; then
-	export MINIKUBE_HOME=~/goinfre
-	kubectl delete -k srcs/kustomization
+	kubectl delete -k srcs/kustomization 2> /dev/null
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
 elif [ "$1" == "dashboard" ]; then
 	open $(cat logs/dashboard_logs | awk '{print $3}')
+elif [ "$1" == "open" ]; then
+	case $2 in
+		"php")
+			echo http://$(minikube ip)/phpmyadmin 2> /dev/null
+			open http://$(minikube ip)/phpmyadmin 2> /dev/null
+			;;
+		"wordpress")
+			echo http://$(minikube ip)/wordpress 2> /dev/null
+			open http://$(minikube ip)/wordpress 2> /dev/null
+			;;
+		*)
+			echo http://$(minikube ip) 2> /dev/null
+			open http://$(minikube ip) 2> /dev/null
+			;;
+	esac 
+elif [ "$1" == "addons" ]; then
+	minikube addons list
 elif [ !$1 ]; then
-	export MINIKUBE_HOME=~/goinfre
 	minikube config set vm-driver virtualbox
 	minikube start --memory 3g > logs/vm_launching_logs &
-	minikube addons enable ingress
 	pid=$!
 	/bin/echo "Launching minikube"
 	while kill -0 $pid 2> /dev/null; do
@@ -54,7 +75,9 @@ elif [ !$1 ]; then
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
+	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
 	kubectl apply -k srcs/kustomization
-	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
+	/bin/echo "Ft_services default : " http://$(minikube ip) 2> /dev/null
+	# /bin/echo "Nginx Services : " http://$(minikube ip) 2> /dev/null
 fi

@@ -4,7 +4,7 @@ secretGenerator:
   - password=YOUR_PASSWORD
 resources:
 - ingress.yaml
-# - mysql.yaml
+- mysql.yaml
 - nginx-dpl.yaml
 # - phpmyadmin.yaml
-# - wordpress.yaml
+- wordpress.yaml
