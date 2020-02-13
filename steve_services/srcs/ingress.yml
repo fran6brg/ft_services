@@ -1,0 +1,11 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+  namespace: default
+  name: ingress-controller
+spec:
+    backend:
+      serviceName: my-nginx
+      servicePort: 80
