@@ -69,7 +69,7 @@ elif [ "$1" == "open" ]; then
 	esac 
 elif [ "$1" == "addons" ]; then
 	minikube addons list
-elif [ !$1 ]; then
+elif [ "$1" == "start" ]; then
 	minikube config set vm-driver virtualbox
 	minikube start --memory 3g > logs/vm_launching_logs &
 	pid=$!

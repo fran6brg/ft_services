@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: wordpress-svc
+  name: wordpress
   labels:
-    run: wordpress-svc
+    app: wordpress
 spec:
-  type: ClusterIP
   ports:
     - port: 80
-      name: http
+      nodePort: 30000
   selector:
     app: wordpress
     tier: frontend
+  type: NodePort
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -24,20 +24,15 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
 ---
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: wordpress-dpl
+  name: wordpress
   labels:
     app: wordpress
 spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: wordpress
-      tier: frontend
   strategy:
     type: Recreate
   template:
@@ -47,7 +42,7 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: appsvcorg/wordpress-alpine-php
+      - image: buddy/wordpress:latest
         name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
@@ -58,7 +53,7 @@ spec:
               name: mysql-pass
               key: password
         ports:
-        - containerPort: 5050
+        - containerPort: 80
           name: wordpress
         volumeMounts:
         - name: wordpress-persistent-storage
