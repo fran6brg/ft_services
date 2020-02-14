@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-wp-svc
+  labels:
+    app: mysql-wp-svc
+spec:
+  clusterIP: None
+  ports:
+  - port: 3306
+    protocol: TCP
+  selector:
+    app: mysql8
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: mysql8
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-dpl
+  labels:
+    app: mysql-dpl
+spec:
+  selector:
+    matchLabels:
+      app: mysql-wp-dpl
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql-wp-dpl
+    spec:
+      containers:
+      - image: mysql:5.6
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_HOST
+          value: admin
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: MYSQL_DATABASE
+          value: wp-db
+        - name: MYSQL_HOST
+          value: root
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+          - name: mysql-persistent-storage
+            mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
