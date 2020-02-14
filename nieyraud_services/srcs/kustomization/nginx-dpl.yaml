@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nginx
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
       - name: nginx-server
-        image: yobasystems/alpine-nginx
+        image: custom_nginx
+        imagePullPolicy: Never
         ports:
         - containerPort: 80
         - containerPort: 443
