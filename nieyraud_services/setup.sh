@@ -80,6 +80,9 @@ elif [ !$1 ]; then
 	done
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
+	docker-machine start service
+	eval $(minikube docker-env)
+	docker build ./srcs/nginx/. -t custom_nginx
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services default : " http://$(minikube ip) 2> /dev/null
 fi
