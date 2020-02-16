@@ -4,13 +4,13 @@
 #		CLEANSE				#
 #############################
 
-rm -r ~/Library/Caches/* 2> /dev/null
-rm ~/.zcompdump* 2> /dev/null
-rm -rf ~/Library/**.42_cache_bak* 2> /dev/null
-rm -rf ~/**.42_cache_bak 2> /dev/null
-rm -rf ~/Library/**.42_cache_bak_** 2> /dev/null
-rm -rf ~/**.42_cache_bak_** 2> /dev/null
-brew cleanup 2> /dev/null
+# rm -rf ~/Library/Caches/* 
+# rm -rf ~/.zcompdump* 
+# rm -rf ~/Library/**.42_cache_bak* 
+# rm -rf ~/**.42_cache_bak 
+# rm -rf ~/Library/**.42_cache_bak_** 
+# rm -rf ~/**.42_cache_bak_** 
+# brew cleanup 
 
 
 #############################
@@ -28,6 +28,7 @@ brew cleanup 2> /dev/null
 
 sp="/-\|"
 export MINIKUBE_HOME=~/goinfre
+# export MINIKUBE_HOME=~/goinfre to do on terminal to be able to launch minikube service list
 
 if [ "$1" = "remove" ]; then
 	case $2 in
@@ -43,13 +44,21 @@ elif [ "$1" = "stop" ]; then
 	kubectl delete -k srcs/kustomization
 	minikube stop;
 elif [ "$1" == "update" ]; then
-	kubectl delete -k srcs/kustomization 2> /dev/null
+	kubectl delete -k srcs/kustomization # 2> /dev/null
+
+	cp srcs/wordpress/wordpress_dump.sql srcs/wordpress/wordpress_dump-target.sql
+	sed -i '' "s/##MINIKUBE_IP##/$(minikube ip)/g" srcs/wordpress/wordpress_dump-target.sql
+	eval $(minikube docker-env)
+	# eval $(minikube docker-env) also to do on terminal
+	docker build -t custom-nginx:1.11 srcs/nginx
+	docker build -t custom-wordpress:1.9 srcs/wordpress
+	docker build -t custom-mysql:1.11 srcs/mysql
+
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
 elif [ "$1" == "apply" ]; then
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
-
 elif [ "$1" == "dashboard" ]; then
 	open $(cat logs/dashboard_logs | awk '{print $3}')
 elif [ "$1" == "open" ]; then
@@ -69,9 +78,9 @@ elif [ "$1" == "open" ]; then
 	esac 
 elif [ "$1" == "addons" ]; then
 	minikube addons list
-elif [ "$1" == "start" ]; then
+elif [ !$1 ]; then
 	minikube config set vm-driver virtualbox
-	minikube start --memory 3g > logs/vm_launching_logs &
+	minikube start --memory 3000mb --memory=3000mb --extra-config=apiserver.service-node-port-range=1-32767 > logs/vm_launching_logs &
 	pid=$!
 	/bin/echo "Launching minikube"
 	while kill -0 $pid 2> /dev/null; do
@@ -81,6 +90,14 @@ elif [ "$1" == "start" ]; then
 	done
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
+
+	cp srcs/wordpress/wordpress_dump.sql srcs/wordpress/wordpress_dump-target.sql
+	sed -i '' "s/##MINIKUBE_IP##/$MINIKUBE_IP/g" srcs/wordpress/wordpress_dump-target.sql
+	eval $(minikube docker-env)
+	docker build -t custom-nginx:1.11 srcs/nginx
+	docker build -t custom-wordpress:1.9 srcs/wordpress
+	docker build -t custom-mysql:1.11 srcs/mysql
+
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services default : " http://$(minikube ip) 2> /dev/null
 fi
