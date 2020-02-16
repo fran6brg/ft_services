@@ -6,5 +6,4 @@ resources:
 - ingress.yaml
 - mysql.yaml
 - nginx-dpl.yaml
-# - wp-configmap.yaml
 - wordpress.yaml

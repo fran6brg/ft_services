@@ -13,9 +13,61 @@
 # brew cleanup 
 
 
+#####################################################################################################
+#									MINIKUBE LAUNCHER												#
+#####################################################################################################
+
 #############################
-#	MINIKUBE LAUNCH			#
+#		FUNCTIONS			#
 #############################
+
+DOCKER_PATH=/Users/nieyraud/Documents/42_project/ft_services/nieyraud_services/srcs
+
+function image_build
+{
+	eval $(minikube docker-env)
+	docker build $DOCKER_PATH/nginx -t custom_nginx
+	docker build $DOCKER_PATH/wordpress -t custom_wp
+	docker build $DOCKER_PATH/mysql -t custom_mysql
+}
+
+function vm_start
+{
+	minikube config set vm-driver virtualbox
+	minikube start --memory 3g > logs/vm_launching_logs &
+	pid=$!
+	/bin/echo "Launching minikube"
+	while kill -0 $pid 2> /dev/null; do
+	    printf '\b%.1s' "$sp"
+   		sp=${sp#?}${sp%???}
+	    sleep 1;
+	done
+	minikube addons enable ingress
+	minikube dashboard > logs/dashboard_logs &
+}
+
+function launcher
+{
+	minikube config set vm-driver virtualbox
+	minikube start --memory 3g > logs/vm_launching_logs &
+	pid=$!
+	/bin/echo "Launching minikube"
+	while kill -0 $pid 2> /dev/null; do
+	    printf '\b%.1s' "$sp"
+   		sp=${sp#?}${sp%???}
+	    sleep 1;
+	done
+	minikube addons enable ingress
+	minikube dashboard > logs/dashboard_logs &
+	eval $(minikube docker-env)
+	image_build
+	kubectl apply -k srcs/kustomization
+	/bin/echo "Ft_services default : " http://$(minikube ip) 2> /dev/null
+}
+
+#########################
+#		MAIN SCRIPT		#
+#########################
 
 # clock_1='\U0001F551'
 # clock_2='\U0001F552'
@@ -28,6 +80,7 @@
 
 sp="/-\|"
 export MINIKUBE_HOME=~/goinfre
+
 
 if [ "$1" = "remove" ]; then
 	case $2 in
@@ -47,42 +100,32 @@ elif [ "$1" == "update" ]; then
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
 elif [ "$1" == "apply" ]; then
+	image_build
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
 elif [ "$1" == "dashboard" ]; then
 	open $(cat logs/dashboard_logs | awk '{print $3}')
+elif [ "$1" == "build" ]; then
+	image_build;
 elif [ "$1" == "open" ]; then
 	case $2 in
-		"php")
-			echo http://$(minikube ip)/phpmyadmin 2> /dev/null
-			open http://$(minikube ip)/phpmyadmin 2> /dev/null
-			;;
 		"wordpress")
-			echo http://$(minikube ip)/wordpress 2> /dev/null
-			open http://$(minikube ip)/wordpress 2> /dev/null
+			echo $(minikube service list | grep wordpress-svc | awk '{print $6}') 2> /dev/null
+			open $(minikube service list | grep wordpress-svc | awk '{print $6}') 2> /dev/null
 			;;
 		*)
 			echo http://$(minikube ip) 2> /dev/null
 			open http://$(minikube ip) 2> /dev/null
 			;;
-	esac 
+	esac
 elif [ "$1" == "addons" ]; then
 	minikube addons list
+elif [ "$1" == "start" ]; then
+	vm_start;
+elif [ "$1" == "env" ]; then
+	echo "export MINIKUBE_HOME=~/goinfre"
+	echo "eval $(minikube docker-env)"
 elif [ !$1 ]; then
-	minikube config set vm-driver virtualbox
-	minikube start --memory 3g > logs/vm_launching_logs &
-	pid=$!
-	/bin/echo "Launching minikube"
-	while kill -0 $pid 2> /dev/null; do
-	    printf '\b%.1s' "$sp"
-   		sp=${sp#?}${sp%???}
-	    sleep 1;
-	done
-	minikube addons enable ingress
-	minikube dashboard > logs/dashboard_logs &
-	docker-machine start service
-	eval $(minikube docker-env)
-	docker build ./srcs/nginx/. -t custom_nginx
-	kubectl apply -k srcs/kustomization
-	/bin/echo "Ft_services default : " http://$(minikube ip) 2> /dev/null
+	launcher;
 fi
+

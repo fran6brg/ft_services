@@ -43,7 +43,8 @@ spec:
         app: mysql-wp-dpl
     spec:
       containers:
-      - image: mysql:5.6
+      - image: custom_mysql
+        imagePullPolicy: Never
         name: mysql
         env:
         - name: MYSQL_ROOT_HOST
