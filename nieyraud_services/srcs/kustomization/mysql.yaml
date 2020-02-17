@@ -1,63 +1,68 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-wp-svc
+  name: mysql
   labels:
-    app: mysql-wp-svc
+    app: ft_services
 spec:
   clusterIP: None
   ports:
   - port: 3306
-    protocol: TCP
   selector:
-    app: mysql8
+    app: ft_services
+    tier: mysql
+  clusterIP: None
+
 ---
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pv-claim
   labels:
-    app: mysql8
+    app: ft_services
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
+
 ---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql-dpl
+  name: mysql
   labels:
-    app: mysql-dpl
+    app: ft_services
 spec:
   selector:
     matchLabels:
-      app: mysql-wp-dpl
+      app: ft_services
+      tier: mysql
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: mysql-wp-dpl
+        app: ft_services
+        tier: mysql
     spec:
       containers:
       - image: custom_mysql
         imagePullPolicy: Never
         name: mysql
         env:
-        - name: MYSQL_ROOT_HOST
-          value: admin
+        - name: MYSQL_USER
+          value: root
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mysql-pass
               key: password
         - name: MYSQL_DATABASE
-          value: wp-db
-        - name: MYSQL_HOST
-          value: root
+          value: wordpress
         ports:
         - containerPort: 3306
           name: mysql

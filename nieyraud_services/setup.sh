@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Une fois de plus, ca nous fais chier" >> count
+
 #############################
 #		CLEANSE				#
 #############################
@@ -54,6 +56,25 @@ function launcher
 	/bin/echo "Launching minikube"
 	while kill -0 $pid 2> /dev/null; do
 	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
+	    printf '\b%.1s' "$sp"
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
@@ -86,6 +107,7 @@ if [ "$1" = "remove" ]; then
 	case $2 in
 		"pods")
 			kubectl delete all --all
+			kubectl delete pvc --all
 			;;
 		*)
 			kill $(ps aux | grep "\bminikube dashboard\b" | awk '{print $2}') 2> /dev/null
@@ -97,6 +119,7 @@ elif [ "$1" = "stop" ]; then
 	minikube stop;
 elif [ "$1" == "update" ]; then
 	kubectl delete -k srcs/kustomization 2> /dev/null
+	image_build
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
 elif [ "$1" == "apply" ]; then
@@ -125,7 +148,8 @@ elif [ "$1" == "start" ]; then
 elif [ "$1" == "env" ]; then
 	echo "export MINIKUBE_HOME=~/goinfre"
 	echo "eval $(minikube docker-env)"
+elif [ "$1" == "count" ]; then
+	cat count | wc -l
 elif [ !$1 ]; then
 	launcher;
 fi
-

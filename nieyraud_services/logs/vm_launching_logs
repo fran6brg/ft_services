@@ -1,4 +1,5 @@
 😄  minikube v1.7.2 on Darwin 10.14.6
+    ▪ MINIKUBE_ACTIVE_DOCKERD=minikube
     ▪ MINIKUBE_HOME=/Users/nieyraud/goinfre
 ✨  Using the virtualbox driver based on user configuration
 🔥  Creating virtualbox VM (CPUs=2, Memory=3000MB, Disk=20000MB) ...
