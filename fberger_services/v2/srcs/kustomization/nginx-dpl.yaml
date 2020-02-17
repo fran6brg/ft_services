@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    run: ft_services
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    name: http
+  - port: 443
+    name: https
+  selector:
+    app: ft_services
+    tier: nginx
+  type: LoadBalancer
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: ft_services
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ft_services
+      tier: nginx
+  template:
+    metadata:
+      labels:
+        app: ft_services
+        tier: nginx
+    spec:
+      containers:
+      - name: nginx-server
+        image: custom_nginx
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        - containerPort: 443

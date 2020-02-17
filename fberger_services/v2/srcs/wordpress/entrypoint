@@ -1,0 +1,4 @@
+mkdir /run/nginx
+touch /run/nginx/nginx.pid
+/usr/sbin/nginx
+/usr/local/bin/docker-entrypoint.sh php-fpm

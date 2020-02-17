@@ -21,11 +21,8 @@ $MYSQL -e '' || conn_error
 if ! $MYSQL -e 'USE wordpress;'
 then
 	echo Initializing database...
-
-	$MYSQL -e 'CREATE DATABASE wordpress;' ||
-		( $MYSQL -e 'DROP DATABASE wordpress;'; conn_error)
-	$MYSQL wordpress < /wordpress-dump.sql ||
-		( $MYSQL -e 'DROP DATABASE wordpress;'; conn_error)
+	$MYSQL -e 'CREATE DATABASE wordpress;' || ( $MYSQL -e 'DROP DATABASE wordpress;'; conn_error)
+	$MYSQL wordpress < /wordpress-dump.sql || ( $MYSQL -e 'DROP DATABASE wordpress;'; conn_error)
 fi
 
 # setup

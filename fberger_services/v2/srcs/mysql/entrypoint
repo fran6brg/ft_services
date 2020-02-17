@@ -1,0 +1,2 @@
+mysql_install_db --user=root --basedir=/usr --datadir=/var/lib/mysql
+mysqld -u root < admin.sql
