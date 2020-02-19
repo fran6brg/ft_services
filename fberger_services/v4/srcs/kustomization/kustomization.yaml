@@ -1,0 +1,10 @@
+secretGenerator:
+- name: mysql-pass
+  literals:
+  - password=admin
+resources:
+- ingress.yaml
+- mysql.yaml
+- nginx-dpl.yaml
+- wordpress.yaml
+- phpmyadmin.yaml

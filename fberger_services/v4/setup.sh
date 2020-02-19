@@ -14,6 +14,7 @@ echo "Une fois de plus, ca nous fais chier" >> count
 # rm -rf ~/**.42_cache_bak_** 
 # brew cleanup 
 
+
 #####################################################################################################
 #									MINIKUBE LAUNCHER												#
 #####################################################################################################
@@ -23,15 +24,15 @@ echo "Une fois de plus, ca nous fais chier" >> count
 #############################
 
 DOCKER_PATH=$PWD/srcs
-echo "DOCKER_PATH = " $DOCKER_PATH
+echo "DOCKER_PATH =" $DOCKER_PATH
 
 function image_build
 {
 	eval $(minikube -p minikube docker-env)
 	docker build $DOCKER_PATH/nginx -t custom_nginx
-	docker build $DOCKER_PATH/mysql -t custom_mysql
 	docker build $DOCKER_PATH/wordpress -t custom_wp
-	docker build $DOCKER_PATH/phpmyadmin -t custom_php
+	docker build $DOCKER_PATH/mysql -t custom_mysql
+	docker build $DOCKER_PATH/phpmyadmin -t custom_phpmyadmin
 }
 
 function vm_start
@@ -49,6 +50,14 @@ function vm_start
 	minikube dashboard > logs/dashboard_logs &
 }
 
+function sed_ip
+{
+	cp file.txt file_test.txt
+	path_1 = "file.txt"
+	old_ip = $(awk -F: '{print $2}' <<< $(cat $(path_1) | grep siteurl | awk '{print $3}'| cut -c 3-)
+	echo $(sed 's/$(old_ip)/abc/g' ${array[$i-1]})
+}
+
 function launcher
 {
 	minikube config set vm-driver virtualbox
@@ -60,6 +69,7 @@ function launcher
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
+
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
 	image_build
@@ -70,7 +80,6 @@ function launcher
 #########################
 #		MAIN SCRIPT		#
 #########################
-
 
 sp="/-\|"
 export MINIKUBE_HOME=~/goinfre
@@ -109,6 +118,10 @@ elif [ "$1" == "open" ]; then
 			echo $(minikube service list | grep wordpress-svc | awk '{print $6}') 2> /dev/null
 			open $(minikube service list | grep wordpress-svc | awk '{print $6}') 2> /dev/null
 			;;
+		"phpmyadmin")
+			echo $(minikube service list | grep phpmyadmin-svc | awk '{print $6}') 2> /dev/null
+			open $(minikube service list | grep phpmyadmin-svc | awk '{print $6}') 2> /dev/null
+			;;
 		*)
 			echo http://$(minikube ip) 2> /dev/null
 			open http://$(minikube ip) 2> /dev/null
@@ -123,6 +136,8 @@ elif [ "$1" == "env" ]; then
 	echo "eval $(minikube docker-env)"
 elif [ "$1" == "count" ]; then
 	cat count | wc -l
+elif [ "$1" == "sed" ]; then
+	sed_ip;
 elif [ !$1 ]; then
 	launcher;
 fi
