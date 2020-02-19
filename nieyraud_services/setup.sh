@@ -27,7 +27,7 @@ DOCKER_PATH=/Users/nieyraud/Documents/42_project/ft_services/nieyraud_services/s
 
 function image_build
 {
-	eval $(minikube docker-env)
+	eval $(minikube -p minikube docker-env)
 	docker build $DOCKER_PATH/nginx -t custom_nginx
 	docker build $DOCKER_PATH/wordpress -t custom_wp
 	docker build $DOCKER_PATH/mysql -t custom_mysql
@@ -56,31 +56,11 @@ function launcher
 	/bin/echo "Launching minikube"
 	while kill -0 $pid 2> /dev/null; do
 	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
-	    printf '\b%.1s' "$sp"
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
-	eval $(minikube docker-env)
 	image_build
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services default : " http://$(minikube ip) 2> /dev/null
