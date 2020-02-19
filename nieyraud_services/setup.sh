@@ -23,7 +23,8 @@ echo "Une fois de plus, ca nous fais chier" >> count
 #		FUNCTIONS			#
 #############################
 
-DOCKER_PATH=/Users/nieyraud/Documents/42_project/ft_services/nieyraud_services/srcs
+DOCKER_PATH=$PWD/srcs
+echo "DOCKER_PATH =" $DOCKER_PATH
 
 function image_build
 {
@@ -31,6 +32,8 @@ function image_build
 	docker build $DOCKER_PATH/nginx -t custom_nginx
 	docker build $DOCKER_PATH/wordpress -t custom_wp
 	docker build $DOCKER_PATH/mysql -t custom_mysql
+	docker build $DOCKER_PATH/phpmyadmin -t custom_phpmyadmin
+
 }
 
 function vm_start
@@ -59,6 +62,7 @@ function launcher
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
+
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
 	image_build
@@ -115,6 +119,10 @@ elif [ "$1" == "open" ]; then
 		"wordpress")
 			echo $(minikube service list | grep wordpress-svc | awk '{print $6}') 2> /dev/null
 			open $(minikube service list | grep wordpress-svc | awk '{print $6}') 2> /dev/null
+			;;
+		"phpmyadmin")
+			echo $(minikube service list | grep phpmyadmin-svc | awk '{print $6}') 2> /dev/null
+			open $(minikube service list | grep phpmyadmin-svc | awk '{print $6}') 2> /dev/null
 			;;
 		*)
 			echo http://$(minikube ip) 2> /dev/null

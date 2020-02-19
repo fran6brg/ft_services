@@ -7,3 +7,4 @@ resources:
 - mysql.yaml
 - nginx-dpl.yaml
 - wordpress.yaml
+- phpmyadmin.yaml

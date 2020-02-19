@@ -1,3 +1,0 @@
-echo 1 && mysql_install_db --user=root --basedir=/usr --datadir=/var/lib/mysql
-echo 2 && mysqld -u root --bootstrap --verbose=0 --skip-grant-tables=0 < admin.sql
-echo 3 && exec /usr/bin/mysqld --user=root --console

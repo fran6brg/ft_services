@@ -10,10 +10,11 @@ spec:
     - port: 80
       name: http
       targetPort: 5050
+      nodePort: 30036
   selector:
     app: ft_services
-    tier: frontend
-  type: LoadBalancer
+    tier: front
+  type: NodePort
 
 ---
 
