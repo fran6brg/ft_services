@@ -1,8 +1,4 @@
 ADD:
-	Deployment and Service:
-		- phpmyadmin : 5000
-		- mysql :
-		- wordpress : 5050
   Server:
     - FTPS : 21
   Utils:
@@ -12,3 +8,7 @@ ADD:
 PATCH:
   -Ingress:
     Rewrite Target : Specify exact path to service
+---
+COMPLETION:
+  database:
+    presetDB

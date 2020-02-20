@@ -24,7 +24,7 @@ echo "Une fois de plus, ca nous fais chier" >> count
 #############################
 
 DOCKER_PATH=$PWD/srcs
-echo "DOCKER_PATH =" $DOCKER_PATH
+#echo "DOCKER_PATH =" $DOCKER_PATH
 
 function image_build
 {
@@ -47,6 +47,7 @@ function vm_start
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
+	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/mysql/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/mysql/wordpress.sql
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
 }
@@ -62,12 +63,18 @@ function launcher
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
-
+	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/mysql/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/mysql/wordpress.sql
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
 	image_build
 	kubectl apply -k srcs/kustomization
-	/bin/echo "Ft_services default : " http://$(minikube ip) 2> /dev/null
+	minikube service list
+}
+
+function clear
+{
+	kubectl delete all --all
+	kubectl delete pvc --all
 }
 
 #########################
@@ -110,6 +117,11 @@ elif [ "$1" == "apply" ]; then
 	image_build
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
+elif [ "$1" == "reapply" ]; then
+	clear
+	image_build
+	kubectl apply -k srcs/kustomization
+	minikube service list
 elif [ "$1" == "dashboard" ]; then
 	open $(cat logs/dashboard_logs | awk '{print $3}')
 elif [ "$1" == "build" ]; then

@@ -4,7 +4,7 @@ RUN apk add --update mysql mysql-client
 RUN mkdir app
 RUN mkdir auth_pam_tool_dir
 RUN mkdir /auth_pam_tool_dir/auth_pam_tool
-COPY admin.sql /admin.sql
+COPY wordpress.sql /var/lib/mysql/wordpress.sql
 COPY my.cnf /etc/mysql/my.cnf
 COPY my.cnf /etc/my.cnf
 COPY entrypoint.sh /entrypoint.sh
