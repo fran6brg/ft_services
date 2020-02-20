@@ -5,8 +5,8 @@ RUN apk -f add nginx mysql-client mysql-server
 
 COPY entrypoint.sh /entrypoint.sh
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY wordpress.sql /wordpress.sql
-COPY wp-config.php /usr/src/wordpress/wp-config.php
+# COPY wordpress.sql /wordpress.sql
+# COPY wp-config.php /usr/src/wordpress/wp-config.php
 
 EXPOSE 5050
 ENTRYPOINT ["sh", "/entrypoint.sh"]
