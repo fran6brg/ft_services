@@ -98,7 +98,6 @@ if [ "$1" = "remove" ]; then
 	case $2 in
 		"pods")
 			kubectl delete all --all
-			kubectl delete pvc --all
 			;;
 		*)
 			kill $(ps aux | grep "\bminikube dashboard\b" | awk '{print $2}') 2> /dev/null
