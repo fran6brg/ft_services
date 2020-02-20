@@ -1,7 +1,6 @@
 FROM alpine:latest
 
 RUN apk add --update mysql mysql-client
-RUN mkdir app
 RUN mkdir auth_pam_tool_dir
 RUN mkdir /auth_pam_tool_dir/auth_pam_tool
 COPY wordpress.sql /var/lib/mysql/wordpress.sql
