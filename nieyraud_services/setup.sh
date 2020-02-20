@@ -47,7 +47,7 @@ function vm_start
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
-	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/mysql/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/mysql/wordpress.sql
+	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
 }
@@ -63,7 +63,7 @@ function launcher
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
-	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/mysql/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/mysql/wordpress.sql
+	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
 	image_build
