@@ -107,6 +107,8 @@ if [ "$1" = "remove" ]; then
 elif [ "$1" = "stop" ]; then
 	kubectl delete -k srcs/kustomization
 	minikube stop;
+elif [ "$1" = "list" ]; then
+	minikube service list;
 elif [ "$1" == "update" ]; then
 	kubectl delete all --all
 	image_build

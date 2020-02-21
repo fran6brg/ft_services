@@ -7,4 +7,5 @@ resources:
 - ingress.yaml
 - nginx-dpl.yaml
 - phpmyadmin.yaml
+- influxdb.yaml
 - wordpress.yaml
