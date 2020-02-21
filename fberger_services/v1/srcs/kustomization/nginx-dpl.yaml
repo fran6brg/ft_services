@@ -1,101 +1,41 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-  labels:
-    app: ft_services
-spec:
-  ports:
-  - port: 443
-    name: https
-  - port: 80
-    name: http
-  - port: 22
-    name: ssh
-  selector:
-    app: ft_services
-    tier: nginx
-  type: LoadBalancer
-
----
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: nginx-dpl
   labels:
-    app: ft_services
+    app: nginx
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: ft_services
-      tier: nginx
-  strategy:
-    type: Recreate
+      app: nginx
   template:
     metadata:
       labels:
-        app: ft_services
-        tier: nginx
+        app: nginx
     spec:
-      restartPolicy: Always
       containers:
-      - name: nginx
-        image: custom-nginx:1.11
+      - name: nginx-server
+        image: custom_nginx
         imagePullPolicy: Never
-        env:
-        - name: SSH_USER
-          valueFrom:
-            secretKeyRef:
-              name: ssh-user
-              key: username
-        - name: SSH_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: ssh-user
-              key: password
         ports:
-        - containerPort: 443
-          name: https
         - containerPort: 80
-          name: http
-        - containerPort: 22
-          name: ssh
-        volumeMounts:
-        - name: nginx-config
-          mountPath: /etc/nginx/nginx.conf
-          subPath: nginx.conf
-          readOnly: true
-        # - name: tls-key
-        #   mountPath: /etc/nginx/tls.crt
-        #   subPath: tls.crt
-        #   readOnly: true
-        # - name: tls-key
-        #   mountPath: /etc/nginx/tls.key
-        #   subPath: tls.key
-        #   readOnly: true
-        - name: ssh-host-keys
-          mountPath: /etc/ssh/ssh_host_ed25519_key
-          subPath: ssh_host_ed25519_key
-          readOnly: true
-        - name: ssh-host-keys
-          mountPath: /etc/ssh/ssh_host_rsa_key
-          subPath: ssh_host_rsa_key
-          readOnly: true
-      volumes:
-      - name: ssh-host-keys
-        secret:
-          secretName: ssh-host-keys
-          items:
-          - key: ssh_host_ed25519_key
-            path: ssh_host_ed25519_key
-            mode: 0600
-          - key: ssh_host_rsa_key
-            path: ssh_host_rsa_key
-            mode: 0600
-      # - name: tls-key
-      #   secret:
-      #     secretName: tls-key
-      - name: nginx-config
-        configMap:
-          name: nginx-config
+        - containerPort: 443
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+  labels:
+    run: nginx-svc
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    name: http
+  - port: 443
+    name: https
+  selector:
+    app: nginx

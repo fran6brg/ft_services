@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Une fois de plus, ca nous fais chier" >> count
+
 #############################
 #		CLEANSE				#
 #############################
@@ -13,9 +15,71 @@
 # brew cleanup 
 
 
+#####################################################################################################
+#									MINIKUBE LAUNCHER												#
+#####################################################################################################
+
 #############################
-#	MINIKUBE LAUNCH			#
+#		FUNCTIONS			#
 #############################
+
+DOCKER_PATH=$PWD/srcs
+#echo "DOCKER_PATH =" $DOCKER_PATH
+
+function image_build
+{
+	eval $(minikube -p minikube docker-env)
+	docker build $DOCKER_PATH/nginx -t custom_nginx
+	docker build $DOCKER_PATH/wordpress -t custom_wp
+	docker build $DOCKER_PATH/mysql -t custom_mysql
+	docker build $DOCKER_PATH/phpmyadmin -t custom_phpmyadmin
+	docker build $DOCKER_PATH/influx -t custom_influx
+}
+
+function vm_start
+{
+	minikube config set vm-driver virtualbox
+	minikube start --memory 3g > logs/vm_launching_logs &
+	pid=$!
+	/bin/echo "Launching minikube"
+	while kill -0 $pid 2> /dev/null; do
+	    printf '\b%.1s' "$sp"
+   		sp=${sp#?}${sp%???}
+	    sleep 1;
+	done
+	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
+	minikube addons enable ingress
+	minikube dashboard > logs/dashboard_logs &
+}
+
+function launcher
+{
+	minikube config set vm-driver virtualbox
+	minikube start --memory 3g > logs/vm_launching_logs &
+	pid=$!
+	/bin/echo "Launching minikube"
+	while kill -0 $pid 2> /dev/null; do
+	    printf '\b%.1s' "$sp"
+   		sp=${sp#?}${sp%???}
+	    sleep 1;
+	done
+	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
+	minikube addons enable ingress
+	minikube dashboard > logs/dashboard_logs &
+	image_build
+	kubectl apply -k srcs/kustomization
+	minikube service list
+}
+
+function clear
+{
+	kubectl delete all --all
+	kubectl delete pvc --all
+}
+
+#########################
+#		MAIN SCRIPT		#
+#########################
 
 # clock_1='\U0001F551'
 # clock_2='\U0001F552'
@@ -28,7 +92,7 @@
 
 sp="/-\|"
 export MINIKUBE_HOME=~/goinfre
-# export MINIKUBE_HOME=~/goinfre to do on terminal to be able to launch minikube service list
+
 
 if [ "$1" = "remove" ]; then
 	case $2 in
@@ -43,61 +107,50 @@ if [ "$1" = "remove" ]; then
 elif [ "$1" = "stop" ]; then
 	kubectl delete -k srcs/kustomization
 	minikube stop;
+elif [ "$1" = "list" ]; then
+	minikube service list;
 elif [ "$1" == "update" ]; then
-	kubectl delete -k srcs/kustomization # 2> /dev/null
-
-	cp srcs/wordpress/wordpress_dump.sql srcs/wordpress/wordpress_dump-target.sql
-	sed -i '' "s/##MINIKUBE_IP##/$(minikube ip)/g" srcs/wordpress/wordpress_dump-target.sql
-	eval $(minikube docker-env)
-	# eval $(minikube docker-env) also to do on terminal
-	docker build -t custom-nginx:1.11 srcs/nginx
-	docker build -t custom-wordpress:1.9 srcs/wordpress
-	docker build -t custom-mysql:1.11 srcs/mysql
-
+	kubectl delete all --all
+	image_build
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
 elif [ "$1" == "apply" ]; then
+	image_build
 	kubectl apply -k srcs/kustomization
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
+elif [ "$1" == "reapply" ]; then
+	clear
+	image_build
+	kubectl apply -k srcs/kustomization
+	minikube service list
 elif [ "$1" == "dashboard" ]; then
 	open $(cat logs/dashboard_logs | awk '{print $3}')
+elif [ "$1" == "build" ]; then
+	image_build;
 elif [ "$1" == "open" ]; then
 	case $2 in
-		"php")
-			echo http://$(minikube ip)/phpmyadmin 2> /dev/null
-			open http://$(minikube ip)/phpmyadmin 2> /dev/null
-			;;
 		"wordpress")
-			echo http://$(minikube ip)/wordpress 2> /dev/null
-			open http://$(minikube ip)/wordpress 2> /dev/null
+			echo $(minikube service list | grep wordpress-svc | awk '{print $6}') 2> /dev/null
+			open $(minikube service list | grep wordpress-svc | awk '{print $6}') 2> /dev/null
+			;;
+		"phpmyadmin")
+			echo $(minikube service list | grep phpmyadmin-svc | awk '{print $6}') 2> /dev/null
+			open $(minikube service list | grep phpmyadmin-svc | awk '{print $6}') 2> /dev/null
 			;;
 		*)
 			echo http://$(minikube ip) 2> /dev/null
 			open http://$(minikube ip) 2> /dev/null
 			;;
-	esac 
+	esac
 elif [ "$1" == "addons" ]; then
 	minikube addons list
+elif [ "$1" == "start" ]; then
+	vm_start;
+elif [ "$1" == "env" ]; then
+	echo "export MINIKUBE_HOME=~/goinfre"
+	echo "eval $(minikube docker-env)"
+elif [ "$1" == "count" ]; then
+	cat count | wc -l
 elif [ !$1 ]; then
-	minikube config set vm-driver virtualbox
-	minikube start --memory 3000mb --memory=3000mb --extra-config=apiserver.service-node-port-range=1-32767 > logs/vm_launching_logs &
-	pid=$!
-	/bin/echo "Launching minikube"
-	while kill -0 $pid 2> /dev/null; do
-	    printf '\b%.1s' "$sp"
-   		sp=${sp#?}${sp%???}
-	    sleep 1;
-	done
-	minikube addons enable ingress
-	minikube dashboard > logs/dashboard_logs &
-
-	cp srcs/wordpress/wordpress_dump.sql srcs/wordpress/wordpress_dump-target.sql
-	sed -i '' "s/##MINIKUBE_IP##/$MINIKUBE_IP/g" srcs/wordpress/wordpress_dump-target.sql
-	eval $(minikube docker-env)
-	docker build -t custom-nginx:1.11 srcs/nginx
-	docker build -t custom-wordpress:1.9 srcs/wordpress
-	docker build -t custom-mysql:1.11 srcs/mysql
-
-	kubectl apply -k srcs/kustomization
-	/bin/echo "Ft_services default : " http://$(minikube ip) 2> /dev/null
+	launcher;
 fi

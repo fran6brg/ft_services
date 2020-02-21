@@ -5,12 +5,12 @@ metadata:
   labels:
     app: ft_services
 spec:
+  clusterIP: None
   ports:
   - port: 3306
   selector:
     app: ft_services
     tier: mysql
-  clusterIP: None
 
 ---
 
@@ -22,10 +22,10 @@ metadata:
     app: ft_services
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
 
 ---
 
@@ -48,23 +48,26 @@ spec:
         app: ft_services
         tier: mysql
     spec:
-      restartPolicy: Always
       containers:
-      - name: mysql
-        image: custom-mysql:1.11
+      - image: custom_mysql
         imagePullPolicy: Never
+        name: mysql
         env:
+        - name: MYSQL_USER
+          value: root
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mysql-pass
               key: password
+        - name: MYSQL_DATABASE
+          value: wordpress
         ports:
         - containerPort: 3306
           name: mysql
         volumeMounts:
-        - name: mysql-persistent-storage
-          mountPath: /app/mysql
+          - name: mysql-persistent-storage
+            mountPath: /app/mysql
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:

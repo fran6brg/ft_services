@@ -3,8 +3,10 @@ secretGenerator:
   literals:
   - password=admin
 resources:
-# - ingress.yaml
 - mysql.yaml
+- ingress.yaml
 - nginx-dpl.yaml
+- phpmyadmin.yaml
 - wordpress.yaml
-# - wp-configmap.yaml
+- influxdb.yaml
+- telegraf.yaml

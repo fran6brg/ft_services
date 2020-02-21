@@ -5,7 +5,7 @@ metadata:
   labels:
     app: phpmyadmin
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: phpmyadmin
@@ -16,12 +16,20 @@ spec:
     spec:
       containers:
         - name: phpmyadmin
-          image: phpmyadmin/phpmyadmin
+          image: custom_phpmyadmin
+          imagePullPolicy: Never
           env:
-            - name: PMA_HOST
-              value: mysql8-service
+          - name: PMA_HOST
+            value: mysql
+          - name: MYSQL_USER
+            value: root
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass
+                key: password
           ports:
-            - containerPort: 80
+            - containerPort: 5000
               name: phpmyadmin
 ---
 apiVersion: v1
@@ -35,5 +43,6 @@ spec:
     app: phpmyadmin
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 5000
+      nodePort: 32293
   type: NodePort

@@ -1,9 +1,12 @@
 FROM wordpress:php7.4-fpm-alpine
 
-RUN apk update && apk add nginx mysql-client
+RUN apk -f upgrade && apk -f update
+RUN apk -f add nginx mysql-client mysql-server
 
+COPY entrypoint.sh /entrypoint.sh
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY wordpress_dump-target.sql /wordpress-dump.sql
-COPY entrypoint /entrypoint
+COPY wordpress.sql /wordpress.sql
+COPY wp-config.php /wp-config.php
 
-ENTRYPOINT sh /entrypoint
+EXPOSE 5050
+ENTRYPOINT ["sh", "/entrypoint.sh"]
