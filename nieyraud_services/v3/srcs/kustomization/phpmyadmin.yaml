@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin-dpl
+  labels:
+    app: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+    spec:
+      containers:
+        - name: phpmyadmin
+          image: custom_phpmyadmin
+          imagePullPolicy: Never
+          env:
+          - name: PMA_HOST
+            value: mysql
+          - name: MYSQL_USER
+            value: root
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass
+                key: password
+          ports:
+            - containerPort: 5000
+              name: phpmyadmin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: phpmyadmin-svc
+  name: phpmyadmin-svc
+spec:
+  selector:
+    app: phpmyadmin
+  ports:
+    - port: 80
+      targetPort: 5000
+      nodePort: 32293
+  type: NodePort
