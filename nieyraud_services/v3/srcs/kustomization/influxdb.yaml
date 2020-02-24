@@ -45,8 +45,7 @@ spec:
         tier: influxdb
     spec:
       containers:
-      - image: custom_influxdb
-        imagePullPolicy: Never
+      - image: influxdb:1.5.4-alpine
         name: influxdb
         ports:
         - containerPort: 8086

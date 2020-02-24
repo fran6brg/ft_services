@@ -1,6 +1,8 @@
 #!/bin/bash
 
-echo "Une fois de plus, ca nous fais chier" >> count
+cnt=$(cat count)
+cnt=$((cnt+1))
+echo $cnt > count
 
 #############################
 #		CLEANSE				#
@@ -33,6 +35,8 @@ function image_build
 	docker build $DOCKER_PATH/wordpress -t custom_wp
 	docker build $DOCKER_PATH/mysql -t custom_mysql
 	docker build $DOCKER_PATH/phpmyadmin -t custom_phpmyadmin
+	docker build $DOCKER_PATH/influxdb -t custom_influxdb
+	docker build $DOCKER_PATH/grafana -t custom_grafana
 
 }
 
@@ -150,7 +154,7 @@ elif [ "$1" == "env" ]; then
 	echo "export MINIKUBE_HOME=~/goinfre"
 	echo "eval $(minikube docker-env)"
 elif [ "$1" == "count" ]; then
-	cat count | wc -l
+	cat count
 elif [ !$1 ]; then
 	launcher;
 fi
