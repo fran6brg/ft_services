@@ -5,11 +5,11 @@ metadata:
   labels:
     app: ft_services
 spec:
-  clusterIP: None
   ports:
   - port: 8086
+    targetPort: 8086
   selector:
-    app: ft_Services
+    app: ft_services
     tier: influxdb
 ---
 apiVersion: v1
@@ -36,6 +36,7 @@ spec:
   selector:
     matchLabels:
       app: ft_services
+      tier: influxdb
   strategy:
     type: Recreate
   template:
@@ -52,8 +53,47 @@ spec:
           name: influxdb
         volumeMounts:
           - name: influx-persistent-storage
-            mountPath: /app/influx
+            mountPath: /var/lib/influxdb
+          - name: influxd-config
+            mountPath: /etc/influxdb/
       volumes:
       - name: influx-persistent-storage
         persistentVolumeClaim:
           claimName: influxdb-pv-claim
+      - name: influxd-config
+        configMap:
+          name: influxd-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: influxd-config
+data:
+  influxdb.conf: |+
+    [meta]
+      dir = "/var/lib/influxdb/meta"
+
+    [data]
+      dir = "/var/lib/influxdb/data"
+      engine = "tsm1"
+      wal-dir = "/var/lib/influxdb/wal"
+
+    [http]
+      enabled = true
+      bind-address = "0.0.0.0:8086"
+      auth-enabled = false
+      log-enabled = true
+      write-tracing = false
+      pprof-enabled = true
+      debug-pprof-enabled = false
+      https-enabled = false
+      https-certificate = "/etc/ssl/influxdb.pem"
+      https-private-key = ""
+      max-row-limit = 0
+      max-connection-limit = 0
+      shared-secret = ""
+      realm = "InfluxDB"
+      unix-socket-enabled = false
+      bind-socket = "/var/run/influxdb.sock"
+      max-body-size = 25000000
+      access-log-path = ""

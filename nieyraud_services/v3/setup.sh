@@ -35,7 +35,7 @@ function image_build
 	docker build $DOCKER_PATH/wordpress -t custom_wp
 	docker build $DOCKER_PATH/mysql -t custom_mysql
 	docker build $DOCKER_PATH/phpmyadmin -t custom_phpmyadmin
-	docker build $DOCKER_PATH/influxdb -t custom_influxdb
+	docker build $DOCKER_PATH/telegraf -t custom_telegraf
 	docker build $DOCKER_PATH/grafana -t custom_grafana
 
 }

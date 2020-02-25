@@ -9,4 +9,5 @@ resources:
 - phpmyadmin.yaml
 - influxdb.yaml
 - wordpress.yaml
+- telegraf.yaml
 - grafana.yaml
