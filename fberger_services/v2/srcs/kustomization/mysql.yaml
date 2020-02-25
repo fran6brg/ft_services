@@ -1,23 +1,23 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: influxdb
+  name: mysql
   labels:
     app: ft_services
 spec:
   clusterIP: None
   ports:
-  - port: 8086
+  - port: 3306
   selector:
-    app: ft_Services
-    tier: influxdb
+    app: ft_services
+    tier: mysql
 
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: influxdb-pv-claim
+  name: mysql-pv-claim
   labels:
     app: ft_services
 spec:
@@ -32,33 +32,43 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: influxdb-dpl
+  name: mysql
   labels:
     app: ft_services
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: ft_services
+      tier: mysql
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app: ft_services
-        tier: influxdb
+        tier: mysql
     spec:
       containers:
-      - image: custom_influxdb
+      - image: custom_mysql
         imagePullPolicy: Never
-        name: influxdb
+        name: mysql
+        env:
+        - name: MYSQL_USER
+          value: root
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: MYSQL_DATABASE
+          value: wordpress
         ports:
-        - containerPort: 8086
-          name: influxdb
+        - containerPort: 3306
+          name: mysql
         volumeMounts:
-          - name: influx-persistent-storage
-            mountPath: /var/lib/influxdb
+          - name: mysql-persistent-storage
+            mountPath: /app/mysql
       volumes:
-      - name: influx-persistent-storage
+      - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: influxdb-pv-claim
+          claimName: mysql-pv-claim

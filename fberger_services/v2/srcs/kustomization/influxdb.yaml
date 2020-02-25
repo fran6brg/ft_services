@@ -11,9 +11,7 @@ spec:
   selector:
     app: ft_Services
     tier: influxdb
-
 ---
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -26,13 +24,11 @@ spec:
   resources:
     requests:
       storage: 2Gi
-
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: influxdb-dpl
+  name: influxdb
   labels:
     app: ft_services
 spec:
@@ -49,15 +45,14 @@ spec:
         tier: influxdb
     spec:
       containers:
-      - image: custom_influxdb
-        imagePullPolicy: Never
+      - image: influxdb:1.5.4-alpine
         name: influxdb
         ports:
         - containerPort: 8086
           name: influxdb
         volumeMounts:
           - name: influx-persistent-storage
-            mountPath: /var/lib/influxdb
+            mountPath: /app/influx
       volumes:
       - name: influx-persistent-storage
         persistentVolumeClaim:

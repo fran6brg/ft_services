@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegraf
+  labels:
+    app: ft_services
+spec:
+  clusterIP: None
+  selector:
+    app: ft_Services
+    tier: telegraf
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegraf
+  labels:
+    app: ft_services
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ft_services
+  template:
+    metadata:
+      labels:
+        app: ft_services
+        tier: telegraf
+    spec:
+      containers:
+      - name: telegraf
+        image: custom_telegraf
+        imagePullPolicy: Never
+        # env:
+      volumes:
+      - name: config
+        configMap:
+          name: telegraf-config

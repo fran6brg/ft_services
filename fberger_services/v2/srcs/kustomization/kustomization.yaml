@@ -10,3 +10,4 @@ resources:
 - wordpress.yaml
 - telegraf.yaml
 - influxdb.yaml
+- grafana.yaml
