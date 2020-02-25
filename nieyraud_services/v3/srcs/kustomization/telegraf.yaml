@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegraf
+  labels:
+    app: ft_services
+spec:
+  clusterIP: None
+  ports:
+  - port: 10255
+  selector:
+    app: ft_services
+    tier: telegraf
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegraf
+  labels:
+    app: ft_services
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ft_services
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ft_services
+        tier: telegraf
+    spec:
+      containers:
+      - image: custom_telegraf
+        imagePullPolicy: Never
+        name: telegraf
+        env:
+        - name: INFLUX_HOST
+          value: influxdb
+        ports:
+        - containerPort: 10255
+          name: telegraf
