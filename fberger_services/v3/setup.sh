@@ -28,6 +28,12 @@ echo $cnt > count
 DOCKER_PATH=$PWD/srcs
 #echo "DOCKER_PATH =" $DOCKER_PATH
 
+function apply_kustom
+{
+	kubectl apply -k srcs/kustomization
+	sleep 10
+	kubectl apply -f srcs/kustomization/telegraf.yaml
+}
 function image_build
 {
 	eval $(minikube -p minikube docker-env)
@@ -71,7 +77,7 @@ function launcher
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
 	image_build
-	kubectl apply -k srcs/kustomization
+	apply_kustom
 	minikube service list
 }
 
@@ -116,16 +122,16 @@ elif [ "$1" = "list" ]; then
 elif [ "$1" == "update" ]; then
 	kubectl delete all --all
 	image_build
-	kubectl apply -k srcs/kustomization
+	apply_kustom
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
 elif [ "$1" == "apply" ]; then
 	image_build
-	kubectl apply -k srcs/kustomization
+	apply_kustom
 	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
 elif [ "$1" == "reapply" ]; then
 	clear
 	image_build
-	kubectl apply -k srcs/kustomization
+	apply_kustom
 	minikube service list
 elif [ "$1" == "dashboard" ]; then
 	open $(cat logs/dashboard_logs | awk '{print $3}')

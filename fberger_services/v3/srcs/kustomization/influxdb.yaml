@@ -97,6 +97,7 @@ data:
       bind-socket = "/var/run/influxdb.sock"
       max-body-size = 25000000
       access-log-path = ""
+      logfile = ""
 
 ---
 
