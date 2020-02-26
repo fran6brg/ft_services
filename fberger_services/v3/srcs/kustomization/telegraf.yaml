@@ -31,6 +31,7 @@ spec:
         app: ft_services
         tier: telegraf
     spec:
+      serviceAccountName: telegraf-account
       containers:
       - image: custom_telegraf
         imagePullPolicy: Never
@@ -39,7 +40,43 @@ spec:
         - name: INFLUX_HOST
           value: influxdb
         - name: HOSTNAME
-          value: cluster-status
+          value: "telegraf-polling-service"
         ports:
         - containerPort: 10255
           name: telegraf
+
+# ---
+
+# kind: ClusterRole
+# apiVersion: rbac.authorization.k8s.io/v1
+# metadata:
+#   namespace: default
+#   name: telegraf-account
+# rules:
+# - apiGroups: [""] # "" indicates the core API group
+#   resources: ["pods"]
+#   verbs: ["get", "watch", "list"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: telegraf-account
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: telegraf-account
+  namespace: default
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: telegraf-account
+  labels:
+    app: telegraf
