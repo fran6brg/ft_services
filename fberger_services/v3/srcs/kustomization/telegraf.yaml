@@ -38,6 +38,8 @@ spec:
         env:
         - name: INFLUX_HOST
           value: influxdb
+        - name: HOSTNAME
+          value: cluster-status
         ports:
         - containerPort: 10255
           name: telegraf
