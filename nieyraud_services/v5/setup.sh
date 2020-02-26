@@ -57,7 +57,7 @@ function vm_start
 	    sleep 1;
 	done
 	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
-	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/telegraf/telegraf.conf| grep 10255 | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/telegraf/telegraf.conf
+	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/telegraf/telegraf.conf| grep 10250 | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/telegraf/telegraf.conf
 	minikube addons enable ingress
 	minikube addons enable metrics-server
 	minikube dashboard > logs/dashboard_logs &
@@ -75,7 +75,7 @@ function launcher
 	    sleep 1;
 	done
 	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
-	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/telegraf/telegraf.conf| grep 10255 | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/telegraf/telegraf.conf
+	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/telegraf/telegraf.conf| grep 10250 | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/telegraf/telegraf.conf
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
 	image_build
