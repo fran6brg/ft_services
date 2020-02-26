@@ -31,6 +31,7 @@ spec:
         app: ft_services
         tier: telegraf
     spec:
+      serviceAccountName: telegraf-account
       containers:
       - image: custom_telegraf
         imagePullPolicy: Never
@@ -41,3 +42,23 @@ spec:
         ports:
         - containerPort: 35000
           name: telegraf
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: telegraf-account
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: telegraf-account
+  namespace: default
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: telegraf-account
+  labels:
+    app: telegraf
