@@ -2,13 +2,6 @@ ADD:
   Server:
     - FTPS : 21
   Utils:
-    - Grafana : 3000
-      InfluxDB 
----
-PATCH:
-  -Ingress:
-    Rewrite Target : Specify exact path to service
----
-COMPLETION:
-  database:
-    presetDB
+      - InfluxDB:
+          add: preset db source
+          add: preset dashboard
