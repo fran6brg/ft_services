@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: phpmyadmin-dpl
+  name: phpmyadmin
   labels:
     app: phpmyadmin
 spec:
@@ -36,8 +36,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    name: phpmyadmin-svc
-  name: phpmyadmin-svc
+    name: phpmyadmin
+  name: phpmyadmin
 spec:
   selector:
     app: phpmyadmin

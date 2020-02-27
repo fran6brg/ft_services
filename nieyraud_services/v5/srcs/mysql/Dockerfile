@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.11.3
 
 RUN apk add --update mysql mysql-client
 RUN mkdir /app

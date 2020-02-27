@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-dpl
+  name: nginx
   labels:
     app: nginx
 spec:
@@ -25,9 +25,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-svc
+  name: nginx
   labels:
-    run: nginx-svc
+    run: nginx
 spec:
   type: ClusterIP
   ports:

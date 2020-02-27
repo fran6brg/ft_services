@@ -43,6 +43,8 @@ function image_build
 	docker build $DOCKER_PATH/phpmyadmin -t custom_phpmyadmin
 	docker build $DOCKER_PATH/telegraf -t custom_telegraf
 	docker build $DOCKER_PATH/grafana -t custom_grafana
+	docker build $DOCKER_PATH/ftps -t custom_ftps
+
 }
 
 function vm_start
