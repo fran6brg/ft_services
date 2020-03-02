@@ -16,6 +16,8 @@ RUN adduser steve --disabled-password && echo steve | passwd -d steve
 
 RUN mkdir home/steve/ftp && echo "Hello World" >> home/steve/ftp/anon.txt
 
+RUN chmod 666 home/steve/ftp/anon.txt
+
 RUN rm etc/vsftpd/vsftpd.conf
 
 RUN chmod 777 home/steve/ftp/ && chown -R steve home/steve/ftp
@@ -31,5 +33,7 @@ ADD start_ftps.sh /start_ftps.sh
 RUN chmod 755 /start_ftps.sh
 
 VOLUME ["/sys/fs/cgroup"]
+
+EXPOSE 21
 
 CMD ["/start_ftps.sh"]

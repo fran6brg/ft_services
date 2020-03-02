@@ -9,14 +9,24 @@ spec:
   ports:
   - port: 21
     targetPort: 21
-    nodePort: 30021
+    nodePort: 30025
     protocol: TCP
     name: ftp21
   - port: 20
     targetPort: 20
     protocol: TCP
-    nodePort: 30020
+    nodePort: 30026
     name: ftp20
+  - port: 30020
+    targetPort: 30020
+    nodePort: 30020
+    protocol: TCP
+    name: ftp30020
+  - port: 30021
+    targetPort: 30021
+    nodePort: 30021
+    protocol: TCP
+    name: ftp30021
   selector:
     run: ftps-alpine
 ---
