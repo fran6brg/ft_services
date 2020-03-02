@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx-server
+        image: custom_nginx
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    run: nginx
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    name: http
+  - port: 443
+    name: https
+  selector:
+    app: nginx
