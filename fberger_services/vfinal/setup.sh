@@ -56,9 +56,12 @@ function vm_start
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
-	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
-	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/telegraf/telegraf.conf | grep 10250 | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/telegraf/telegraf.conf
-	sed -i '' s/$(cat srcs/ftps/vsftpd.conf | grep pasv_address  | cut -d'=' -f2)/$(minikube ip)/g srcs/ftps/vsftpd.conf	
+	cp srcs/wordpress/wordpress_generic.sql srcs/wordpress/wordpress.sql
+	cp srcs/telegraf/telegraf_generic.conf srcs/telegraf/telegraf.conf
+	cp srcs/ftps/vsftpd_generic.conf srcs/ftps/vsftpd.conf
+	sed -i '' s/__MINIKUBEIP__/$(minikube ip)/g srcs/wordpress/wordpress.sql
+	sed -i '' s/__MINIKUBEIP__/$(minikube ip)/g srcs/telegraf/telegraf.conf
+	sed -i '' s/__MINIKUBEIP__/$(minikube ip)/g srcs/ftps/vsftpd.conf	
 	minikube addons enable ingress
 	minikube addons enable metrics-server
 	minikube dashboard > logs/dashboard_logs &
@@ -75,9 +78,12 @@ function launcher
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
-	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
-	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/telegraf/telegraf.conf | grep 10250 | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/telegraf/telegraf.conf
-	sed -i '' s/$(cat srcs/ftps/vsftpd.conf | grep pasv_address  | cut -d'=' -f2)/$(minikube ip)/g srcs/ftps/vsftpd.conf	
+	cp srcs/wordpress/wordpress_generic.sql srcs/wordpress/wordpress.sql
+	cp srcs/telegraf/telegraf_generic.conf srcs/telegraf/telegraf.conf
+	cp srcs/ftps/vsftpd_generic.conf srcs/ftps/vsftpd.conf
+	sed -i '' s/__MINIKUBEIP__/$(minikube ip)/g srcs/wordpress/wordpress.sql
+	sed -i '' s/__MINIKUBEIP__/$(minikube ip)/g srcs/telegraf/telegraf.conf
+	sed -i '' s/__MINIKUBEIP__/$(minikube ip)/g srcs/ftps/vsftpd.conf	
 	minikube addons enable ingress
 	minikube dashboard > logs/dashboard_logs &
 	image_build
@@ -100,6 +106,9 @@ export MINIKUBE_HOME=~/goinfre
 
 
 if [ "$1" = "remove" ]; then
+	rm srcs/wordpress/wordpress.sql
+	rm srcs/telegraf/telegraf.conf
+	rm srcs/ftps/vsftpd.conf
 	case $2 in
 		"pods")
 			kubectl delete all --all

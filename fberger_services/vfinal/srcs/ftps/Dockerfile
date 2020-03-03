@@ -30,9 +30,9 @@ ADD vsftpd.conf etc/vsftpd/vsftpd.conf
 
 RUN rc-update add vsftpd && rc-status
 
-ADD start_ftps.sh /start_ftps.sh
+ADD entrypoint.sh /entrypoint.sh
 
-RUN chmod 755 /start_ftps.sh
+RUN chmod 755 /entrypoint.sh
 
 VOLUME ["/sys/fs/cgroup"]
 

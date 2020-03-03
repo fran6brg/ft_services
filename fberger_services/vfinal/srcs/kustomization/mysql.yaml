@@ -36,6 +36,7 @@ metadata:
   labels:
     app: ft_services
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: ft_services
