@@ -1,11 +1,7 @@
 #!/bin/bash
 
-cnt=$(cat count)
-cnt=$((cnt+1))
-echo $cnt > count
-
 #############################
-#		CLEANSE				#
+#		CLEAN  				#
 #############################
 
 # rm -rf ~/Library/Caches/* 
@@ -29,20 +25,20 @@ DOCKER_PATH=$PWD/srcs
 
 function apply_kustom
 {
-	kubectl apply -k srcs/kustomization
-	sleep 10
-	kubectl apply -f srcs/kustomization/telegraf.yaml
+	kubectl apply -k srcs/kustomization --force
+	# sleep 10
+	# kubectl apply -f srcs/kustomization/telegraf.yaml --force
 }
 function image_build
 {
 	eval $(minikube -p minikube docker-env)
 	docker build $DOCKER_PATH/nginx -t custom_nginx
-	docker build $DOCKER_PATH/wordpress -t custom_wp
-	docker build $DOCKER_PATH/mysql -t custom_mysql
-	docker build $DOCKER_PATH/phpmyadmin -t custom_phpmyadmin
-	docker build $DOCKER_PATH/telegraf -t custom_telegraf
-	docker build $DOCKER_PATH/grafana -t custom_grafana
-	docker build $DOCKER_PATH/ftps -t custom_ftps
+	# docker build $DOCKER_PATH/wordpress -t custom_wp
+	# docker build $DOCKER_PATH/mysql -t custom_mysql
+	# docker build $DOCKER_PATH/phpmyadmin -t custom_phpmyadmin
+	# docker build $DOCKER_PATH/telegraf -t custom_telegraf
+	# docker build $DOCKER_PATH/grafana -t custom_grafana
+	# docker build $DOCKER_PATH/ftps -t custom_ftps
 }
 
 function vm_start
@@ -109,15 +105,9 @@ if [ "$1" = "remove" ]; then
 	rm srcs/wordpress/wordpress.sql
 	rm srcs/telegraf/telegraf.conf
 	rm srcs/ftps/vsftpd.conf
-	case $2 in
-		"pods")
-			kubectl delete all --all
-			;;
-		*)
-			kill $(ps aux | grep "\bminikube dashboard\b" | awk '{print $2}') 2> /dev/null
-			minikube delete
-			;;
-	esac
+	kubectl delete all --all
+	kill $(ps aux | grep "\bminikube dashboard\b" | awk '{print $2}') 2> /dev/null
+	minikube delete
 elif [ "$1" = "stop" ]; then
 	kubectl delete -k srcs/kustomization
 	minikube stop;
@@ -163,8 +153,6 @@ elif [ "$1" == "start" ]; then
 elif [ "$1" == "env" ]; then
 	echo "export MINIKUBE_HOME=~/goinfre"
 	echo "eval $(minikube docker-env)"
-elif [ "$1" == "count" ]; then
-	cat count
 elif [ !$1 ]; then
 	launcher;
 fi
