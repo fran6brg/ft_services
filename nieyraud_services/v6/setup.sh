@@ -123,20 +123,22 @@ elif [ "$1" = "stop" ]; then
 	minikube stop;
 elif [ "$1" = "list" ]; then
 	minikube service list;
+	/bin/echo "Ft_services ip : " http://$(minikube ip) 2> /dev/null
 elif [ "$1" == "update" ]; then
 	kubectl delete all --all
 	image_build
 	apply_kustom
-	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
+	/bin/echo "Ft_services ip : " http://$(minikube ip) 2> /dev/null
 elif [ "$1" == "apply" ]; then
 	image_build
 	apply_kustom
-	/bin/echo "Ft_services ip : " $(minikube ip) 2> /dev/null
+	/bin/echo "Ft_services ip : " http://$(minikube ip) 2> /dev/null
 elif [ "$1" == "reapply" ]; then
 	clear
 	image_build
 	apply_kustom
 	minikube service list
+	/bin/echo "Ft_services ip : " http://$(minikube ip) 2> /dev/null
 elif [ "$1" == "dashboard" ]; then
 	open $(cat logs/dashboard_logs | awk '{print $3}')
 elif [ "$1" == "build" ]; then

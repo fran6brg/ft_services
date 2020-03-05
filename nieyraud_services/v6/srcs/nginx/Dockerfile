@@ -3,7 +3,7 @@ FROM alpine:3.11.3
 # NGINX CONFIG
 
 RUN apk update && apk upgrade
-RUN apk add nginx
+RUN apk add nginx php-fpm
 RUN apk add openssl \
 	&& openssl req -x509 -nodes -days 365 \
 	-subj "/C=CA/ST=QC/O=Company, Inc./CN=mydomain.com" \

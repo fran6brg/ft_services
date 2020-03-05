@@ -20,10 +20,18 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 80
+            - containerPort: 5000
             - containerPort: 443
           env:
           - name: HOST_PHPMYADMIN
             value: phpmyadmin
+          volumeMounts:
+            - name: sites-source
+              mountPath: /usr/share/nginx/html
+      volumes:
+      - name: sites-source
+        persistentVolumeClaim:
+          claimName: sites-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -38,6 +46,10 @@ spec:
     targetPort: 80
     protocol: TCP
     name: http
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+    name: http-phpmyadmin
   - port: 443
     targetPort: 443
     protocol: TCP
