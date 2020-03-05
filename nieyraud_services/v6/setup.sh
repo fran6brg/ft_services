@@ -85,10 +85,34 @@ function launcher
 	minikube service list
 }
 
+function script_help
+{
+	echo "setup.sh: Optiens"
+	echo "usage: sh setup.sh [options]"
+	echo "Options :"
+	echo "\\t remove\\t: Remove the VM"
+	echo "\\t stop\\t: Shut down the VM"
+	echo "\\t list\\t: List all services of minikube"
+	echo "\\t reapply: Remove all objects inside the cluster then apply."
+	echo "\\t update\\t: Equivalent of reapply except that it keep persistent volume up"
+	echo "\\t apply\\t: Apply every yaml files inside kustomization directory."
+	echo "\\t build\\t: Build images"
+	echo "\\t env\\t: Print export command to modify env: eval \$(sh setup.sh env)"
+	echo "\\t count\\t: Print the number of time the script as been launched."
+}
+
 function clear
 {
 	kubectl delete all --all
 	kubectl delete pvc --all
+}
+
+
+function ip
+{
+	echo "|----------------------|---------------------------|--------------------------------|"
+	echo "| default      \\t       | Ft_services ip\\t\\t   | http://$(minikube ip) \\t    |" 2> /dev/null
+	echo "|----------------------|---------------------------|--------------------------------|"
 }
 
 #########################
@@ -123,22 +147,22 @@ elif [ "$1" = "stop" ]; then
 	minikube stop;
 elif [ "$1" = "list" ]; then
 	minikube service list;
-	/bin/echo "Ft_services ip : " http://$(minikube ip) 2> /dev/null
+	ip;
 elif [ "$1" == "update" ]; then
 	kubectl delete all --all
 	image_build
 	apply_kustom
-	/bin/echo "Ft_services ip : " http://$(minikube ip) 2> /dev/null
+	ip;
 elif [ "$1" == "apply" ]; then
 	image_build
 	apply_kustom
-	/bin/echo "Ft_services ip : " http://$(minikube ip) 2> /dev/null
+	ip;
 elif [ "$1" == "reapply" ]; then
 	clear
 	image_build
 	apply_kustom
 	minikube service list
-	/bin/echo "Ft_services ip : " http://$(minikube ip) 2> /dev/null
+	ip;
 elif [ "$1" == "dashboard" ]; then
 	open $(cat logs/dashboard_logs | awk '{print $3}')
 elif [ "$1" == "build" ]; then
@@ -161,12 +185,12 @@ elif [ "$1" == "open" ]; then
 elif [ "$1" == "addons" ]; then
 	minikube addons list
 elif [ "$1" == "start" ]; then
-	vm_start;
+	launcher;
 elif [ "$1" == "env" ]; then
 	echo "export MINIKUBE_HOME=~/goinfre"
 	echo "eval $(minikube docker-env)"
 elif [ "$1" == "count" ]; then
 	cat count
 elif [ !$1 ]; then
-	launcher;
+	script_help;
 fi

@@ -47,9 +47,15 @@ metadata:
     name: phpmyadmin
   name: phpmyadmin
 spec:
+  type: ClusterIP
   selector:
     app: phpmyadmin
   ports:
-    - port: 5000
-      targetPort: 5000
-  type: ClusterIP
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+    name: http
+  - port: 9000
+    targetPort: 9000
+    protocol: TCP
+    name: fatcgi-access
