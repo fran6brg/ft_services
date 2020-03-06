@@ -42,15 +42,15 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 80
+  - port: 32080
     targetPort: 80
     protocol: TCP
     name: http
-  - port: 5000
+  - port: 32500
     targetPort: 5000
     protocol: TCP
-    name: http-phpmyadmin
-  - port: 443
+    name: php-server
+  - port: 32443
     targetPort: 443
     protocol: TCP
     name: https

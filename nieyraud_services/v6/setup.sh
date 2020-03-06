@@ -4,6 +4,16 @@ cnt=$(cat count)
 cnt=$((cnt+1))
 echo $cnt > count
 
+rose='\033[1;31m'
+violetfonce='\033[0;35m'
+violetclair='\033[1;35m'
+neutre='\033[0m'
+cyanfonce='\033[0;36m'
+cyanclair='\033[1;36m'
+vertfonce='\033[0;32m'
+vertclair='\033[1;32m'
+rouge='\033[31m'
+
 #############################
 #		CLEANSE				#
 #############################
@@ -82,7 +92,7 @@ function launcher
 	minikube dashboard > logs/dashboard_logs &
 	image_build
 	apply_kustom
-	minikube service list
+	ip
 }
 
 function script_help
@@ -107,6 +117,19 @@ function clear
 	kubectl delete pvc --all
 }
 
+function logs
+{
+	case $1 in
+		"nginx")
+			echo "$cyanfonce Nginx access log :$neutre"
+			kubectl exec $(kubectl get pods | grep nginx | awk '{print $1}') cat /var/log/nginx/access.log
+			echo "$cyanfonce Nginx error log :$neutre"
+			kubectl exec $(kubectl get pods | grep nginx | awk '{print $1}') cat /var/log/nginx/error.log
+			;;
+		*)
+			echo "Please enter the service you want to print logs"
+	esac
+}
 
 function ip
 {
@@ -186,6 +209,8 @@ elif [ "$1" == "addons" ]; then
 	minikube addons list
 elif [ "$1" == "start" ]; then
 	launcher;
+elif [ "$1" == "logs" ]; then
+	logs $2;
 elif [ "$1" == "env" ]; then
 	echo "export MINIKUBE_HOME=~/goinfre"
 	echo "eval $(minikube docker-env)"
