@@ -1,7 +1,0 @@
-ADD:
-  Server:
-    - FTPS : 21
-  Utils:
-      - InfluxDB:
-          add: preset db source
-          add: preset dashboard

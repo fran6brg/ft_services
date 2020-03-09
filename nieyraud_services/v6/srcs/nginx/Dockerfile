@@ -11,11 +11,16 @@ RUN apk add openssl \
 	-keyout /etc/ssl/private/nginx-selfsigned.key \
 	-out /etc/ssl/certs/nginx-selfsigned.crt
 RUN mkdir /run/nginx && touch /run/nginx/nginx.pid && mkdir -p /usr/share/nginx/html
+RUN mkdir /run/php
+RUN adduser nginx nginx
+RUN chown -R nginx:nginx /etc/php7
+RUN chown -R nginx:nginx /etc/nginx
 
 COPY default.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY index.nginx-debian.html /usr/share/nginx/html/index.nginx-debian.html
+COPY www.conf /etc/php7/php-fpm.d/www.conf
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod 777 /entrypoint.sh
 
 EXPOSE 80 443 22
 

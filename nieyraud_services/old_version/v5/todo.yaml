@@ -1,0 +1,7 @@
+ADD:
+  Server:
+  - FTPS : 21
+  - nginx:
+    rules:
+      name: ssh
+      port: 443

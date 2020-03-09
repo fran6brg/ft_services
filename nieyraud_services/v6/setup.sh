@@ -36,7 +36,6 @@ rouge='\033[31m'
 #############################
 
 DOCKER_PATH=$PWD/srcs
-#echo "DOCKER_PATH =" $DOCKER_PATH
 
 function apply_kustom
 {
@@ -126,8 +125,29 @@ function logs
 			echo "$cyanfonce Nginx error log :$neutre"
 			kubectl exec $(kubectl get pods | grep nginx | awk '{print $1}') cat /var/log/nginx/error.log
 			;;
+		"php")
+			echo "$cyanfonce PHP-FPM error log :$neutre"
+			kubectl exec $(kubectl get pods | grep nginx | awk '{print $1}') cat var/log/php7/error.log
+			;;
 		*)
 			echo "Please enter the service you want to print logs"
+	esac
+}
+
+function enter
+{
+	case $1 in
+		"nginx")
+			kubectl exec -it $(kubectl get pods | grep nginx | awk '{print $1}') sh
+			;;
+		"pma")
+			kubectl exec -it $(kubectl get pods | grep phpmyadmin | awk '{print $1}') sh
+			;;
+		"wordpress")
+			kubectl exec -it $(kubectl get pods | grep wordpress | awk '{print $1}') sh
+			;;
+		*)
+			echo "Please choose a pod to enter"
 	esac
 }
 
@@ -190,27 +210,14 @@ elif [ "$1" == "dashboard" ]; then
 	open $(cat logs/dashboard_logs | awk '{print $3}')
 elif [ "$1" == "build" ]; then
 	image_build;
-elif [ "$1" == "open" ]; then
-	case $2 in
-		"wordpress")
-			echo $(minikube service list | grep wordpress-svc | awk '{print $6}') 2> /dev/null
-			open $(minikube service list | grep wordpress-svc | awk '{print $6}') 2> /dev/null
-			;;
-		"phpmyadmin")
-			echo $(minikube service list | grep phpmyadmin-svc | awk '{print $6}') 2> /dev/null
-			open $(minikube service list | grep phpmyadmin-svc | awk '{print $6}') 2> /dev/null
-			;;
-		*)
-			echo http://$(minikube ip) 2> /dev/null
-			open http://$(minikube ip) 2> /dev/null
-			;;
-	esac
 elif [ "$1" == "addons" ]; then
 	minikube addons list
 elif [ "$1" == "start" ]; then
 	launcher;
 elif [ "$1" == "logs" ]; then
 	logs $2;
+elif [ "$1" == "enter" ]; then
+	enter $2;
 elif [ "$1" == "env" ]; then
 	echo "export MINIKUBE_HOME=~/goinfre"
 	echo "eval $(minikube docker-env)"

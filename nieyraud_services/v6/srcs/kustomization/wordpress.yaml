@@ -73,5 +73,9 @@ spec:
         ports:
         - containerPort: 5050
         volumeMounts:
-        - name: wordpress-persistent-storage
-          mountPath: /var/www/html
+            - name: sites-source
+              mountPath: /usr/share/nginx/html
+      volumes:
+      - name: sites-source
+        persistentVolumeClaim:
+          claimName: sites-pvc
