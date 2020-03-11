@@ -9,7 +9,7 @@ RUN apk -f add php-fpm
 
 COPY entrypoint.sh /entrypoint.sh
 COPY www.conf /etc/php7/php-fpm.d/www.conf
-
+# COPY config.inc.php /phpMyAdmin-4.9.4-all-languages/.
 EXPOSE 5000 9000
 
 CMD ["sh", "/entrypoint.sh"]
