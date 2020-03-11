@@ -25,7 +25,7 @@ RUN chown -R nginx:nginx /etc/nginx
 
 COPY default.conf /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY index.nginx-debian.html /usr/share/nginx/html/index.nginx-debian.html
+COPY index.nginx-debian.html /index.nginx-debian.html
 COPY www.conf /etc/php7/php-fpm.d/www.conf
 COPY php.ini /etc/php7/php.ini
 COPY entrypoint.sh /entrypoint.sh
