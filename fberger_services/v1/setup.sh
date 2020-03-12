@@ -43,6 +43,7 @@ function apply_kustom
 	sleep 10
 	kubectl apply -f srcs/kustomization/telegraf.yaml
 }
+
 function image_build
 {
 	eval $(minikube -p minikube docker-env)
@@ -58,7 +59,7 @@ function image_build
 
 function vm_start
 {
-	minikube config set vm-driver virtualbox
+	minikube config set vm-driver virtualbox --extra-config=apiserver.service-node-port-range=1-35000
 	minikube start --memory 3g > logs/vm_launching_logs &
 	pid=$!
 	/bin/echo "Launching minikube"

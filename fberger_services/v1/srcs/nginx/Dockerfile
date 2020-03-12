@@ -28,7 +28,7 @@ COPY www.conf /etc/php7/php-fpm.d/www.conf
 COPY php.ini /etc/php7/php.ini
 COPY entrypoint.sh /entrypoint.sh
 
-# # SSH | https://www.dontpanicblog.co.uk/2018/11/30/ssh-into-a-docker-container/
+# # ssh premiere facon de faire : https://www.dontpanicblog.co.uk/2018/11/30/ssh-into-a-docker-container/
 # RUN apk add openrc openssh-server
 # # RUN groupadd sshgroup && useradd -ms /bin/bash -g sshgroup sshuser
 # RUN addgroup sshgroup
@@ -44,7 +44,7 @@ COPY entrypoint.sh /entrypoint.sh
 #     chmod 600 $home/.ssh/authorized_keys
 # RUN rc-update add sshd
 
-# ssh
+# ssh 2eme facon de faire : utilise le root
 USER root
 RUN apk add openrc nginx openssl openssh --no-cache
 RUN adduser -D admin 

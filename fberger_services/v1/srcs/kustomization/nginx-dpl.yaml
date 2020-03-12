@@ -41,7 +41,7 @@ metadata:
     run: nginx
 spec:
   # type: ClusterIP
-  type: NodePort
+  type: NodePort # https://stackoverflow.com/questions/41509439/whats-the-difference-between-clusterip-nodeport-and-loadbalancer-service-types
   ports:
   - port: 32080
     targetPort: 80
