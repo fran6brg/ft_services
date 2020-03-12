@@ -32,13 +32,6 @@ spec:
             - containerPort: 5000
             - containerPort: 9000
               name: phpmyadmin
-          volumeMounts:
-            - name: sites-source
-              mountPath: /usr/share/nginx/html
-      volumes:
-      - name: sites-source
-        persistentVolumeClaim:
-          claimName: sites-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -51,11 +44,7 @@ spec:
   selector:
     app: phpmyadmin
   ports:
-  - port: 5000
+  - port: 80
     targetPort: 5000
     protocol: TCP
     name: http
-  - port: 9000
-    targetPort: 9000
-    protocol: TCP
-    name: fatcgi-access
