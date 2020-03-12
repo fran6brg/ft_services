@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin
+  labels:
+    app: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+    spec:
+      containers:
+        - name: phpmyadmin
+          image: custom_phpmyadmin
+          imagePullPolicy: Never
+          env:
+          - name: PMA_HOST
+            value: mysql
+          - name: MYSQL_USER
+            value: root
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass
+                key: password
+          ports:
+            - containerPort: 5000
+            - containerPort: 9000
+              name: phpmyadmin
+          # volumeMounts:
+          #   - name: sites-source
+          #     mountPath: /usr/share/nginx/html
+      # volumes:
+      # - name: sites-source
+      #   persistentVolumeClaim:
+      #     claimName: sites-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: phpmyadmin
+  name: phpmyadmin
+spec:
+  type: LoadBalancer
+  selector:
+    app: phpmyadmin
+  ports:
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+    name: http
+  - port: 9000
+    targetPort: 9000
+    protocol: TCP
+    name: fatcgi-access
