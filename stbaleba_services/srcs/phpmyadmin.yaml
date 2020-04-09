@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin
+  labels:
+    app: phpmyadmin
+spec:
+  ports:
+    - port: 5000
+  selector:
+    app: phpmyadmin
+    tier: frontend
+  type: NodePort
+
+---
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: phpmyadmin
+  labels:
+    app: phpmyadmin
+spec:
+  selector:
+    matchLabels:
+      app: phpmyadmin
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+        tier: frontend
+    spec:
+      containers:
+      - image: phpmyadmin_alpine 
+        imagePullPolicy: Never
+        name: phpmyadmin
+        #      env:
+        #   - name: WORDPRESS_DB_HOST
+        #   value: localhost
+        # - name: WORDPRESS_DB_PASSWORD
+        #   value: password
+        ports:
+        - containerPort: 5000
+          name: phpmyadmin

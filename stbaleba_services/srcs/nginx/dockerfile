@@ -1,0 +1,21 @@
+FROM alpine:3.11.3
+
+RUN apk update && apk upgrade --available
+
+RUN apk add --no-cache openrc
+
+RUN apk add openssl && apk add vim && apk add nginx
+
+ADD index.html var/www/localhost/htdocs/
+
+RUN rm etc/nginx/conf.d/default.conf
+
+ADD default.conf etc/nginx/conf.d/
+
+RUN mkdir /run/nginx && touch /run/nginx/nginx.pid
+
+ADD start.sh /start.sh
+
+RUN chmod 755 start.sh
+
+ENTRYPOINT ["sh", "/start.sh"]

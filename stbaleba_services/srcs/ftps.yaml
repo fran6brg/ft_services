@@ -47,11 +47,10 @@ spec:
     spec:
       containers:
       - name: ftps-alpine
-        image: test_alpine
+        image: ftps_alpine
         imagePullPolicy: Never
         ports:
         - containerPort: 21
         - containerPort: 20
-        - containerPort: 30021
         - containerPort: 30020
-
+        - containerPort: 30021

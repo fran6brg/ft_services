@@ -9,6 +9,3 @@ spec:
     backend:
       serviceName: my-nginx
       servicePort: 80
-    backend:
-      serviceName: ftps-alpine
-      servicePort: 21

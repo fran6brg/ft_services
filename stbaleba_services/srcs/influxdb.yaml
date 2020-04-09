@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb
+  labels:
+    app: grafana
+spec:
+  ports:
+  - port: 8086
+    targetPort: 8086
+  selector:
+    app: grafana
+    tier: influxdb
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: influxdb-pv-claim
+  labels:
+    app: ft_services
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  labels:
+    app: grafana
+    tier: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+      tier: influxdb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: grafana
+        tier: influxdb
+    spec:
+      containers:
+      - image: influxdb_alpine
+        imagePullPolicy: Never
+        name: influxdb
+        ports:
+        - containerPort: 8086
+          name: influxdb
+        volumeMounts:
+          - name: influx-persistent-storage
+            mountPath: /var/lib/influxdb
+      volumes:
+      - name: influx-persistent-storage
+        persistentVolumeClaim:
+          claimName: influxdb-pv-claim

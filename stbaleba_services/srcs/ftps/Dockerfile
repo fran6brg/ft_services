@@ -8,8 +8,6 @@ RUN apk add openssl && apk add vsftpd  && apk add vim
 
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem -subj "/CN=ftps/O=ftps"
 
-#ADD vsftpd.pem  /etc/ssl/private/vsftpd.pem
-
 RUN apk add lftp
 
 RUN adduser steve --disabled-password && echo steve | passwd -d steve
