@@ -27,5 +27,6 @@ if [ $? == 1 ] ; then
 	done
 fi
 echo "Database set up";
-/usr/local/bin/docker-entrypoint.sh php-fpm
+php7-fpm
+# /usr/local/bin/docker-entrypoint.sh php-fpm
 # cp /wp-config.php /var/www/html/wp-config.php

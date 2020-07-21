@@ -10,7 +10,6 @@ spec:
     - port: 80
       name: http
       targetPort: 5050
-      nodePort: 30036
   selector:
     app: ft_services
     tier: frontend
@@ -29,7 +28,6 @@ spec:
   resources:
     requests:
       storage: 2Gi
-
 ---
 
 apiVersion: apps/v1

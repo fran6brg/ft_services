@@ -44,7 +44,7 @@ spec:
   selector:
     app: phpmyadmin
   ports:
-  - port: 80
+  - port: 5000
     targetPort: 5000
     protocol: TCP
     name: http

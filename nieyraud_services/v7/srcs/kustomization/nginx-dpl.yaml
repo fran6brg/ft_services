@@ -40,7 +40,7 @@ metadata:
   labels:
     run: nginx
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
   - port: 32080
     targetPort: 80
