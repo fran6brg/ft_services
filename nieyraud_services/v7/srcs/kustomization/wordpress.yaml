@@ -7,13 +7,13 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - port: 80
+    - port: 5050
       name: http
       targetPort: 5050
+      protocol: TCP
   selector:
-    app: ft_services
-    tier: frontend
-
+    app: ft_service
+    tier: wordpress
 ---
 
 apiVersion: v1
@@ -21,13 +21,13 @@ kind: PersistentVolumeClaim
 metadata:
   name: wp-pv-claim
   labels:
-    app: ft_services
+    app: ft_service
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 500Mi
 ---
 
 apiVersion: apps/v1
@@ -35,25 +35,21 @@ kind: Deployment
 metadata:
   name: wordpress
   labels:
-    app: ft_services
+    app: ft_service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ft_services
-      tier: frontend
+      app: ft_service
+      tier: wordpress
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: ft_services
-        tier: frontend
+        app: ft_service
+        tier: wordpress
     spec:
-      volumes:
-      - name: wordpress-persistent-storage
-        persistentVolumeClaim:
-          claimName: wp-pv-claim
       containers:
       - image: custom_wp
         imagePullPolicy: Never
@@ -69,11 +65,13 @@ spec:
               name: mysql-pass
               key: password
         ports:
-        - containerPort: 5050
+          - containerPort: 9000
+          - containerPort: 5050
+            name: wordpress
         volumeMounts:
-            - name: sites-source
-              mountPath: /usr/share/nginx/html
+        - name: wordpress-persistent-storage
+          mountPath: /var/www/html
       volumes:
-      - name: sites-source
+      - name: wordpress-persistent-storage
         persistentVolumeClaim:
-          claimName: sites-pvc
+          claimName: wp-pv-claim

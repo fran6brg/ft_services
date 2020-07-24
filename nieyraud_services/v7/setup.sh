@@ -39,11 +39,11 @@ DOCKER_PATH=$PWD/srcs
 
 function apply_kustom
 {
-	# kubectl create -f metallb-config.yaml
 	kubectl apply -k srcs/kustomization
 	sleep 10
 	kubectl apply -f srcs/kustomization/telegraf.yaml
 }
+
 function image_build
 {
 	eval $(minikube -p minikube docker-env)
@@ -89,7 +89,6 @@ function launcher
 	done
 	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
 	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/telegraf/telegraf.conf| grep 10250 | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/telegraf/telegraf.conf
-	minikube addons enable ingress
 	minikube addons enable metrics-server
 	minikube addons enable metallb
 	minikube dashboard > logs/dashboard_logs &

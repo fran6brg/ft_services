@@ -25,13 +25,6 @@ spec:
           env:
           - name: HOST_PHPMYADMIN
             value: phpmyadmin
-          volumeMounts:
-            - name: sites-source
-              mountPath: /usr/share/nginx/html
-      volumes:
-      - name: sites-source
-        persistentVolumeClaim:
-          claimName: sites-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -42,15 +35,11 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - port: 32080
+  - port: 80
     targetPort: 80
     protocol: TCP
     name: http
-  - port: 32500
-    targetPort: 5000
-    protocol: TCP
-    name: php-server
-  - port: 32443
+  - port: 443
     targetPort: 443
     protocol: TCP
     name: https

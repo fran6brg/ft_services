@@ -6,6 +6,7 @@ RUN mkdir auth_pam_tool_dir
 RUN mkdir /auth_pam_tool_dir/auth_pam_tool
 COPY my.cnf /etc/mysql/my.cnf
 COPY my.cnf /etc/my.cnf
+COPY wordpress.sql ./wordpress.sql
 COPY entrypoint.sh /entrypoint.sh
 
 EXPOSE 3306

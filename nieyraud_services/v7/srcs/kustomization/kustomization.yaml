@@ -11,5 +11,4 @@ resources:
 - wordpress.yaml
 - grafana.yaml
 - telegraf.yaml
-- site_pvc.yaml
 - metallb-config.yaml

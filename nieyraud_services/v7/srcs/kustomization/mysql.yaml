@@ -25,7 +25,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 1Gi
 
 ---
 
@@ -54,6 +54,8 @@ spec:
         imagePullPolicy: Never
         name: mysql
         env:
+        - name: MYSQL_HOST
+          value: mysql
         - name: MYSQL_USER
           value: root
         - name: MYSQL_ROOT_PASSWORD
