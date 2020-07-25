@@ -10,11 +10,4 @@ FLUSH PRIVILEGES;
 EOF
 mysqld -u $MYSQL_USER --bootstrap --verbose=0 --skip-grant-tables=0 < admin.sql
 echo "Admin set up"
-/usr/bin/mysqld --user=$MYSQL_USER --console &
-export MYSQLPID=$!
-
-mysqld -u $MYSQL_USER -h $MYSQL_HOST -p$MYSQL_ROOT_PASSWORD wordpress < wordpress.sql
-echo "Wordpress site imported"
-
-echo "Mysql config ready"
-fg $MYSQLPID
+/usr/bin/mysqld --user=$MYSQL_USER --console

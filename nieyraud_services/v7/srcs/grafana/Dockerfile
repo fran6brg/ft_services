@@ -1,11 +1,15 @@
-FROM grafana/grafana:6.4.0
+FROM alpine:3.11.3
 
-COPY grafana.db /var/lib/grafana/grafana
-RUN touch /var/lib/grafana/grafana.db
-RUN cat /var/lib/grafana/grafana > /var/lib/grafana/grafana.db
-RUN chmod 666 /var/lib/grafana/grafana.db
-RUN rm /var/lib/grafana/grafana
+
+RUN apk -f upgrade && apk -f update
+RUN apk -f add nginx wget
+RUN apk add openrc musl busybox
+RUN apk add grafana --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing
+
+
+COPY grafana.db /usr/share/grafana/data/grafana.db
+COPY entrypoint.sh ./entrypoint.sh
 
 EXPOSE 3000
 
-CMD ["sh", "run.sh"]
+ENTRYPOINT ["sh", "/entrypoint.sh"]
