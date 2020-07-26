@@ -54,6 +54,7 @@ function image_build
 	docker build $DOCKER_PATH/telegraf -t custom_telegraf
 	docker build $DOCKER_PATH/grafana -t custom_grafana
 	docker build $DOCKER_PATH/ftps -t custom_ftps
+	docker build $DOCKER_PATH/influxdb -t custom_influxdb
 
 }
 
@@ -70,7 +71,6 @@ function vm_start
 	done
 	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
 	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/telegraf/telegraf.conf| grep 10250 | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/telegraf/telegraf.conf
-	minikube addons enable ingress
 	minikube addons enable metrics-server
 	minikube addons enable metallb
 	minikube dashboard > logs/dashboard_logs &
