@@ -36,9 +36,12 @@ rouge='\033[31m'
 #############################
 
 DOCKER_PATH=$PWD/srcs
-
+NGINX_PATH=$PWD/srcs/nginx
 function apply_kustom
 {
+	kubectl create secret generic ssh-keys \
+		--from-file=ssh-privatekey=$NGINX_PATH/.ssh/id_rsa \
+		--from-file=ssh-publickey=$NGINX_PATH/.ssh/id_rsa.pub
 	kubectl apply -k srcs/kustomization
 	sleep 10
 	kubectl apply -f srcs/kustomization/telegraf.yaml
@@ -69,8 +72,7 @@ function vm_start
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
-	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/wordpress/wordpress.sql | grep siteurl | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/wordpress/wordpress.sql
-	sed -i '' s/$(awk -F: '{print $2}' <<< $(cat srcs/telegraf/telegraf.conf| grep 10250 | awk '{print $3}') | cut -c 3-)/$(minikube ip)/g srcs/telegraf/telegraf.conf
+	sed 's/__MINIKUBEIP__/$(minikube ip)/g' < srcs/telegraf/telegraf_generic.conf > srcs/telegraf/telegraf.conf
 	minikube addons enable metrics-server
 	minikube addons enable metallb
 	minikube dashboard > logs/dashboard_logs &

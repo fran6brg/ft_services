@@ -14,17 +14,25 @@ spec:
       labels:
         app: nginx
     spec:
+      volumes:
+      - name: ssh-keys-v
+        secret:
+          secretName: ssh-keys
       containers:
         - name: nginx-server
           image: custom_nginx
           imagePullPolicy: Never
           ports:
             - containerPort: 80
-            - containerPort: 5000
+            - containerPort: 22
             - containerPort: 443
           env:
           - name: HOST_PHPMYADMIN
             value: phpmyadmin
+          volumeMounts:
+          - name: ssh-keys-v
+            mountPath: "/.ssh"
+      
 ---
 apiVersion: v1
 kind: Service
@@ -43,5 +51,9 @@ spec:
     targetPort: 443
     protocol: TCP
     name: https
+  - port: 22
+    targetPort: 22
+    protocol: TCP
+    name: ssh
   selector:
     app: nginx
