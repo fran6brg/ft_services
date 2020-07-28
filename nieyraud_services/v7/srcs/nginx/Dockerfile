@@ -14,7 +14,6 @@ RUN apk add openssl \
 
 RUN apk add openrc musl busybox openssh
 RUN rc-update add sshd
-RUN echo "root:root" | chpasswd
 RUN mkdir /run/nginx && touch /run/nginx/nginx.pid && mkdir -p /usr/share/nginx/html
 RUN adduser nginx nginx
 RUN chown -R nginx:nginx /etc/nginx

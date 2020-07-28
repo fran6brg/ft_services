@@ -39,6 +39,7 @@ DOCKER_PATH=$PWD/srcs
 NGINX_PATH=$PWD/srcs/nginx
 function apply_kustom
 {
+	rm ~/.ssh/known_hosts
 	kubectl create secret generic ssh-keys \
 		--from-file=ssh-privatekey=$NGINX_PATH/.ssh/id_rsa \
 		--from-file=ssh-publickey=$NGINX_PATH/.ssh/id_rsa.pub
