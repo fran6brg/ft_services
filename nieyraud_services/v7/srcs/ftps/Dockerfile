@@ -10,8 +10,16 @@ RUN apk add openssl \
 	-keyout /etc/ssl/private/ftps-selfsigned.key \
 	-out /etc/ssl/certs/ftps-selfsigned.crt
 
-RUN mkdir ftps
-RUN echo root >> /etc/vsftpd.userlist
+RUN adduser admin --disabled-password && echo admin | passwd -d admin
+RUN mkdir -p /admin/ftps
+RUN chown admin:admin /admin/ftps
+RUN echo "Ca marche!" >> /admin/ftps/anon.txt
+RUN chmod 777 admin/ftps
+RUN echo admin >> /etc/vsftpd.userlist
+
+
+RUN rc-update add vsftpd && rc-status
+
 
 COPY vsftpd.conf /etc/vsftpd/vsftpd.conf
 COPY entrypoint.sh ./entrypoint.sh
