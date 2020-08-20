@@ -1,7 +1,9 @@
 FROM alpine:3.11.3
 
 RUN apk update && apk upgrade --available
-RUN apk add vsftpd
+RUN apk add vsftpd lftp
+
+RUN apk add openrc musl busybox
 
 RUN apk add openssl \
 	&& openssl req -x509 -nodes -days 365 \
@@ -12,16 +14,17 @@ RUN apk add openssl \
 
 RUN adduser admin --disabled-password && echo admin | passwd -d admin
 RUN mkdir -p /admin/ftps
-RUN chown admin:admin /admin/ftps
+RUN chown -P admin:admin /admin/ftps
 RUN echo "Ca marche!" >> /admin/ftps/anon.txt
 RUN chmod 777 admin/ftps
 RUN echo admin >> /etc/vsftpd.userlist
-
+RUN mkdir -p /var/log/ && touch /var/log/vsftpd.log
 
 RUN rc-update add vsftpd && rc-status
 
-
 COPY vsftpd.conf /etc/vsftpd/vsftpd.conf
 COPY entrypoint.sh ./entrypoint.sh
+
+EXPOSE 21 20
 
 CMD ["sh", "/entrypoint.sh"]

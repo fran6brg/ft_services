@@ -9,7 +9,6 @@ spec:
   ports:
   - port: 21
     targetPort: 21
-    protocol: TCP
     name: ftp
 ---
 

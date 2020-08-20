@@ -16,7 +16,6 @@ COPY entrypoint.sh /entrypoint.sh
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY wordpress.sql /wordpress.sql
 RUN chmod 777 /wordpress.sql
-RUN chmod 777 /etc/nginx/site
 COPY wp-config.php /etc/nginx/site/wp-config.php
 
 

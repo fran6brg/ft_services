@@ -3,12 +3,12 @@ secretGenerator:
   literals:
   - password=admin
 resources:
-# - mysql.yaml
+- mysql.yaml
 - nginx-dpl.yaml
-# - phpmyadmin.yaml
-# - influxdb.yaml
+- phpmyadmin.yaml
+- influxdb.yaml
 - ftps.yaml
-# - wordpress.yaml
-# - grafana.yaml
-# - telegraf.yaml
+- wordpress.yaml
+- grafana.yaml
+- telegraf.yaml
 - metallb-config.yaml
