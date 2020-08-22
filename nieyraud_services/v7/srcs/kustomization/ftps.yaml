@@ -9,22 +9,31 @@ spec:
   ports:
   - port: 21
     targetPort: 21
-    name: ftp
+    protocol: TCP
+    name: ftp-command
+  - port: 20
+    targetPort: 20
+    protocol: TCP
+    name: ftp-file
+  selector:
+    app: ftps
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ftps
+  labels:
+    app: ftps
 spec:
   selector:
     matchLabels:
-      run: ftps
+      app: ftps
   replicas: 1
   template:
     metadata:
       labels:
-        run: ftps
+        app: ftps
     spec:
       containers:
       - name: ftps
@@ -32,3 +41,4 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 21
+        - containerPort: 20

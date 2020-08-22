@@ -77,8 +77,8 @@ function vm_start
    		sp=${sp#?}${sp%???}
 	    sleep 1;
 	done
-	sed 's/__MINIKUBEIP__/$(minikube ip)/g' < srcs/telegraf/telegraf_generic.conf > srcs/telegraf/telegraf.conf
-	sed 's/__MINIKUBEIP__/192.168.99.6/g' < srcs/wordpress/wordpress_generic.sql > srcs/wordpress/wordpress.sql
+	sed s/__MINIKUBEIP__/$(minikube ip)/g < srcs/telegraf/telegraf_generic.conf > srcs/telegraf/telegraf.conf
+	# sed 's/__MINIKUBEIP__/192.168.99.6/g' < srcs/wordpress/wordpress_generic.sql > srcs/wordpress/wordpress.sql
 	minikube addons enable metrics-server
 	minikube addons enable metallb
 	minikube dashboard > logs/dashboard_logs &
@@ -158,6 +158,9 @@ function enter
 		"phpmyadmin")
 			kubectl exec -it $(kubectl get pods | grep phpmyadmin | awk '{print $1}') sh
 			;;
+		"ftps")
+			kubectl exec -it $(kubectl get pods | grep ftps | awk '{print $1}') sh
+			;;
 		*)
 			echo "Please choose a pod to enter"
 	esac
@@ -209,7 +212,6 @@ elif [ "$1" == "update" ]; then
 	apply_kustom
 	ip;
 elif [ "$1" == "apply" ]; then
-	image_build
 	apply_kustom
 	ip;
 elif [ "$1" == "reapply" ]; then
@@ -235,6 +237,8 @@ elif [ "$1" == "env" ]; then
 	echo "eval $(minikube docker-env)"
 elif [ "$1" == "count" ]; then
 	cat count
+elif [ "$1" == "sed" ]; then
+	sed s/__MINIKUBEIP__/$(minikube ip)/g < srcs/telegraf/telegraf_generic.conf > srcs/telegraf/telegraf.conf
 elif [ !$1 ]; then
 	script_help;
 fi
